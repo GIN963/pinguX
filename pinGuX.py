@@ -27,7 +27,13 @@ ufw : on fait faire au script la commande sudo ufw status verbose (pour voir s'i
                         sinon noter les recommendations dans le rapport             
             si output ligne de commande = "Status : disabled" -> noter dans le rapport qu'il faudra l'activer et fournir des recommendations sur tout ce qui est whiteliste et default policy
             sinon -> regarder si iptables ou nftables sont actifs sinon mettre ufw pas bien/ou pas installé dans le rapport
-      
+
+iptables: on fait faire au script la commande iptables -L pour qu'il nous affiche la table filter (la table parmis les 3 qui nous interesse)
+                si table filter active (en fonction de l'outpu de la ligne de commande) -> noter dans le rapport que c'est actif
+                      verification de la politique par défaut de chaque chain
+                            si bonne politique + whitelist -> noter dans le rapport que c'est bon
+                            sinon -> noter dans le rapport les recommandations
+                si l'output de la CLI montre qu'il est inactif -> regarder si nftables est actif 
       
       vim/etc/default/ufw (pour voir les configs d'ufw)
       
