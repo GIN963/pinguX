@@ -12,7 +12,7 @@ parser.add_argument('-q', '--quiet', action = true, help = 'Silent mode. No info
 args = parser.parse_args()
 
 
-def check_whitelist():
+def check_ufw():
 
       whitelist = [
     ('22', 'tcp', 'in'),
@@ -25,14 +25,15 @@ def check_whitelist():
     ('icmp', None, 'out')  # pour le ping
     ]
       
+      allowed_ports = []
 
       ufw_com = subprocess.run(['ufw', 'status', 'verbose'], capture_output = True, text = True)
 
       ufw_result = ufw_com.stdout
-
-      allowed_ports = []
-
-      for line in lines:
+      
+      if "Status: active" in ufw_result:
+      if "Default: deny (incoming), deny (outgoing), disabled (routed)":
+      for line in ufw_result:
             if "ALLOW" in line:
                   parts = line.strip().split()
 
@@ -47,6 +48,20 @@ def check_whitelist():
                 proto = 'tcp'  # on suppose TCP par défaut
 
             allowed_ports.append((port, proto, direction))
+
+      for rule in allowed_ports
+            if rule in whitelist
+            print("Authorized rule: " + rule)
+            else print("Unauthorized rule: " + rule)
+
+      for rule in whitelist
+            if rule not in allowed_ports
+            print("Noot noot !! You forgot a rule: " + rule)
+            
+      else: print("Noot noot !! Your default policy should deny incoming traffic, deny outgoing traffic and disable routed")
+      print("You should apply this whitelist too: " + whitelist)
+
+# else checker si nftables est actif
 
 
 
