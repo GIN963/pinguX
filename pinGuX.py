@@ -12,9 +12,46 @@ parser.add_argument('-q', '--quiet', action = true, help = 'Silent mode. No info
 args = parser.parse_args()
 
 
-def check_firewall():
-      ufw_com = "f"
-      print("hello")
+def check_whitelist():
+
+      whitelist = [
+    ('22', 'tcp', 'in'),
+    ('80', 'tcp', 'in'),
+    ('443', 'tcp', 'in'),
+    ('53', 'udp', 'out'),
+    ('80', 'tcp', 'out'),
+    ('443', 'tcp', 'out'),
+    ('123', 'udp', 'out'),
+    ('icmp', None, 'out')  # pour le ping
+    ]
+      
+
+      ufw_com = subprocess.run(['ufw', 'status', 'verbose'], capture_output = True, text = True)
+
+      ufw_result = ufw_com.stdout
+
+      allowed_ports = []
+
+      for line in lines:
+            if "ALLOW" in line:
+                  parts = line.strip().split()
+
+            if len(parts) >= 3:
+                  port_proto = parts[0]
+                  direction = parts[2].lower()  # IN ou OUT
+
+            if '/' in port_proto:
+                port, proto = port_proto.split('/')
+            else:
+                port = port_proto
+                proto = 'tcp'  # on suppose TCP par défaut
+
+            allowed_ports.append((port, proto, direction))
+
+
+
+      
+
 
       
 '''
@@ -27,13 +64,7 @@ ufw : on fait faire au script la commande sudo ufw status verbose (pour voir s'i
                         sinon noter les recommendations dans le rapport             
             si output ligne de commande = "Status : disabled" -> noter dans le rapport qu'il faudra l'activer et fournir des recommendations sur tout ce qui est whiteliste et default policy
             sinon -> regarder si iptables ou nftables sont actifs sinon mettre ufw pas bien/ou pas installé dans le rapport
-
-iptables: on fait faire au script la commande iptables -L pour qu'il nous affiche la table filter (la table parmis les 3 qui nous interesse)
-                si table filter active (en fonction de l'outpu de la ligne de commande) -> noter dans le rapport que c'est actif
-                      verification de la politique par défaut de chaque chain
-                            si bonne politique + whitelist -> noter dans le rapport que c'est bon
-                            sinon -> noter dans le rapport les recommandations
-                si l'output de la CLI montre qu'il est inactif -> regarder si nftables est actif 
+      
       
       vim/etc/default/ufw (pour voir les configs d'ufw)
       
