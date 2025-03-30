@@ -1,7 +1,14 @@
+<<<<<<< HEAD
 import argparse
 import os
 import subprocess
 import re
+=======
+from modules.check_ssh import check_ssh
+from modules.check_ufw import check_ufw
+from modules.check_nft import check_nftables
+
+>>>>>>> 3c669cc (wip: local work before branch sync)
 
 parser = argparse.ArgumentParser(description="Linux machine scanner")
 
@@ -12,6 +19,7 @@ parser.add_argument('-q', '--quiet', action='store_true', help='Silent mode. No 
 
 args = parser.parse_args()
 
+<<<<<<< HEAD
 #----- UFW -----
 def check_ufw():
     
@@ -243,3 +251,5 @@ check_ssh()
 
 
 '''
+=======
+>>>>>>> 3c669cc (wip: local work before branch sync)
