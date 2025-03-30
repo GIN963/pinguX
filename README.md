@@ -118,5 +118,3 @@ Projet de scanner de sécurité Linux local & distant, avec extension Cloud et C
 - Interface web minimaliste
 
 ---
-
-

@@ -22,32 +22,13 @@ def check_ssh():
             ssh_config_com = subprocess.run(['cat','/etc/ssh/sshd_config'], capture_output = True, text = True)
             ssh_config = ssh_config_com.stdout
             lines = ssh_config.strip().splitlines()
+            
+            check_ssh_directive(lines, '^Port\s+(\d+)', 1, report, lambda x : x != "22", lambda port : f"✅ SSH on port {port}", 
+            lambda port : f"❌ Port number {port} can be targeted by scanners and bots, change it (ex: 2022)",
+            "❌ Port directive not found: SSH will use port 22 by default, which is commonly targeted by bots. Consider specifying a different port.")
 
-            for port_numb in lines:
-                match = re.search('^Port\s+(\d+)',port_numb)
-                if match:
-                    port = match.group(1)
-                    
-                    if port == "22":
-                        report.append(f"❌ Port number #{port} ca be targeted by scanners and bots, change it (ex: 2022)")
-                    else:
-                        report.append(f"✅ SSH on port #{port}")
-            break
-
-            rootLogFlag = False
-
-            for root_log in lines:
-                match = re.search('^PermitRootLogin\s+(\S+)', root_log)
-                if match:
-                    value = match.group(1)
-                    rootLogFlag = True
-                    if value == "no":
-                        report.append('✅ PermitRootLogin is set to "no"')
-                    else:
-                        report.append('❌ PermitRootLogin is not set to "no" (recommended: "no")')
-
-            if rootLogFlag == False:
-                report.append("❌ PermitRootLogin directive not found (default may allow root login)")
+            check_ssh_directive(lines, '^PermitRootLogin\s+(\S+)', 1, report, lambda x : x == "no", lambda value : f'✅ PermitRootLogin is set to {value}',
+            lambda value : f'❌ PermitRootLogin is not set to {value}" (recommended: "no")', "❌ PermitRootLogin directive not found (default may allow root login)")
 
             maxTriesFlag = False
             for tries in lines:
