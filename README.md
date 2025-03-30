@@ -119,5 +119,4 @@ Projet de scanner de sécurité Linux local & distant, avec extension Cloud et C
 
 ---
 
-> Tu peux coller ce fichier dans le repo GitHub (README ou /docs/roadmap.md) pour montrer l'évolution du projet.
 
