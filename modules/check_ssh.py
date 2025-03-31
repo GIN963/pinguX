@@ -5,6 +5,7 @@ import re
 
 #----- SSH -----
 def check_ssh():
+
     report = []
     ssh_state_com = subprocess.run(['systemctl','is-active','ssh'], capture_output = True, text = True)
     ssh_state = ssh_state_com.stdout
@@ -30,36 +31,32 @@ def check_ssh():
             check_ssh_directive(lines, '^PermitRootLogin\s+(\S+)', 1, report, lambda x : x == "no", lambda value : f'✅ PermitRootLogin is set to {value}',
             lambda value : f'❌ PermitRootLogin is not set to {value}" (recommended: "no")', "❌ PermitRootLogin directive not found (default may allow root login)")
 
-            maxTriesFlag = False
-            for tries in lines:
-                match = re.search('^MaxAuthTries\s+(\d+)', tries)
-                if match:
-                   nb = int(match.group(1))
-                   maxTriesFlag = True
-
-                   if nb > 3:
-                    report.append("❌ MaxAuthTries is set too high (recommended: 3 or less)")
-                   else:
-                    report.append(f"✅ MaxAuthTries is set to {nb}")
-            
-            if maxTriesFlag == False:
-                report.append("❌ MaxAuthTries directive not found (default is 6, which is too high)")
+            check_ssh_directive(lines,'^MaxAuthTries\s+(\d+)', 1, report, lambda x : x <= 3, lambda nb : f"✅ MaxAuthTries is set to {nb}",
+            lambda nb : f"❌ MaxAuthTries is set to {nb} (recommended: 3 or less)", "❌ MaxAuthTries directive not found (default is 6, which is too high)")
 
             psswdAuthFlag = False
+            keyAuthFlag = False
+            psswdValue = None
+            keyValue = None
 
-            for psswdAuth in lines:
-                match = re.search('^PasswordAuthentication\s+(\S+)', psswdAuth)
-                if match:
-                    value = match.group(1)
+            for line in lines:
+                match1 = re.search(r'^PasswordAuthentication\s+(\S+)', line)
+                match2 = re.search(r'^PubkeyAuthentication\s+(\S+)', line)
+
+                if match1:
+                    psswdValue = match1.group(1)
                     psswdAuthFlag = True
 
-                    if value == "no":
-                        report.append("✅ Password authentication is disabled")
-                    else:
-                        report.append("❌ Password authentication is enabled (recommended: use public key authentication)")
+                if match2:
+                    keyValue = match2.group(1)
+                    keyAuthFlag = True
 
-            if psswdAuthFlag == False:
+            analyze_auth_methods(psswdValue, keyValue, report)
+
+            if not psswdAuthFlag:
                 report.append("❌ PasswordAuthentication directive not found")
+            if not keyAuthFlag:
+                report.append("⚠️ PubkeyAuthentication directive not found")
             
             emptyPassFlag = False
 
