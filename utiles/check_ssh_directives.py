@@ -21,13 +21,14 @@ def check_ssh_directive(lines, regex, group_index, report, check_func, success_m
               report.append(missing_msg)
             
 
-def analyze_auth_methods(psswd_value, key_value, report):
+def analyze_auth_methods(primary_value, key_value, report, context):
     
-    if psswd_value == "no" and key_value == "yes":
-        report.append("✅ Password authentication is disabled & public key authentication is enabled")
-    elif psswd_value == "no" and (key_value is None or key_value == "no"):
-        report.append("⚠️ PasswordAuthentication is disabled, but PubkeyAuthentication is either disabled or not configured → SSH login might be impossible.")
+    if primary_value == "no" and key_value == "yes":
+        report.append(f"✅ {context} is disabled & PubkeyAuthentication is enabled")
+    elif primary_value == "no" and (key_value is None or key_value == "no"):
+        report.append(f"⚠️ {context} is disabled, but PubkeyAuthentication is either disabled or not configured → SSH login might be impossible.")
     else:
-        report.append("❌ Make sure to disable password authentication and enable public key authentication")
+        report.append(f"❌ Make sure to disable {context} and enable PubkeyAuthentication")
+
 
 

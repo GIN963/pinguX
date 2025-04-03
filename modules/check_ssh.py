@@ -6,6 +6,24 @@ import re
 #----- SSH -----
 def check_ssh():
 
+    directives = {
+        "PasswordAuthentication": {
+            "regex": r'^PasswordAuthentication\s+(\S+)',
+            "value": None,
+            "found": False
+        },
+        "PubkeyAuthentication": {
+            "regex": r'^PubkeyAuthentication\s+(\S+)',
+            "value": None,
+            "found": False
+        },
+        "PermitEmptyPasswords": {
+            "regex": r'^PermitEmptyPasswords\s+(\S+)',
+            "value": None,
+            "found": False
+        }      
+    }
+
     report = []
     ssh_state_com = subprocess.run(['systemctl','is-active','ssh'], capture_output = True, text = True)
     ssh_state = ssh_state_com.stdout
@@ -34,42 +52,20 @@ def check_ssh():
             check_ssh_directive(lines,'^MaxAuthTries\s+(\d+)', 1, report, lambda x : x <= 3, lambda nb : f"✅ MaxAuthTries is set to {nb}",
             lambda nb : f"❌ MaxAuthTries is set to {nb} (recommended: 3 or less)", "❌ MaxAuthTries directive not found (default is 6, which is too high)")
 
-            psswdAuthFlag = False
-            keyAuthFlag = False
-            psswdValue = None
-            keyValue = None
+            check_ssh_directive(lines, "^LoginGraceTime\s+(\S+)", 1, report, lambda x: convert_to_seconds(x) <= 30, lambda v: f"✅ LoginGraceTime is set to {v} (secure)",
+            lambda v: f"❌ LoginGraceTime is set to {v}, which is too long (recommended: 30s or less)", "❌ LoginGraceTime directive not found")
 
             for line in lines:
-                match1 = re.search(r'^PasswordAuthentication\s+(\S+)', line)
-                match2 = re.search(r'^PubkeyAuthentication\s+(\S+)', line)
+                for directive, data in directives.items():
+                    match = re.search(data["regex"], line)
+                    if match:
+                        data["value"] = match.group(1)
+                        data["found"] = True
+                    
+            analyze_auth_methods(directives["PasswordAuthentication"].value, directives["PubkeyAuthentication"].value, report, context = "PasswordAuthentication")
+            analyze_auth_methods(directives["PermitEmptyPasswords"].value, directives["PubkeyAuthentication"].value, report, context = "PermitEmptyPasswords")
 
-                if match1:
-                    psswdValue = match1.group(1)
-                    psswdAuthFlag = True
-
-                if match2:
-                    keyValue = match2.group(1)
-                    keyAuthFlag = True
-
-            analyze_auth_methods(psswdValue, keyValue, report)
-
-            if not psswdAuthFlag:
-                report.append("❌ PasswordAuthentication directive not found")
-            if not keyAuthFlag:
-                report.append("⚠️ PubkeyAuthentication directive not found")
+            for directive, data in directives.items():
+                if not data["found"]:
+                    report.append(f"❌ {directive} directive not found")
             
-            emptyPassFlag = False
-
-            for line in lines:
-                match = re.search(r'^PermitEmptyPasswords\s+(\S+)', line)
-                if match:
-                    value = match.group(1)
-                    emptyPassFlag = True
-
-                    if value == "no":
-                        report.append("✅ Empty password logins are disabled")
-                    else:
-                        report.append("❌ Empty password logins are allowed (set PermitEmptyPasswords to no)")
-
-            if emptyPassFlag == False:
-                report.append("❌ PermitEmptyPasswords directive not found")
