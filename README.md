@@ -3,7 +3,7 @@ PinguX — your chill little auditor with sharp security claws 🐧🛡️
 
 # 🐧 PinguX Roadmap (Mars → Août 2025)
 
-Projet de scanner de sécurité Linux local & distant, avec extension Cloud et CI/CD. Roadmap alignée avec la montée en compétences DevSecOps / CloudSec de l'utilisateur.
+Projet de scanner de sécurité Linux local & distant, avec extension Cloud et CI/CD. Roadmap alignée avec ma montée en compétences DevSecOps / CloudSec.
 
 ---
 
