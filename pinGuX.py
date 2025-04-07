@@ -1,3 +1,14 @@
+#!/usr/bin/env python3
+
+import os
+import argparse
+import sys
+
+if os.geteuid() != 0:
+    print("❌ This script must be run as root. Try using 'sudo'.")
+    sys.exit(1)
+
+# Module imports
 from modules.check_ssh import check_ssh
 from modules.check_ufw import check_ufw
 from modules.check_nft import check_nftables

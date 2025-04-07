@@ -2,6 +2,7 @@ import subprocess
 import re
 import os
 import grp
+import pwd
 from collections import Counter
 
 def check_users_groups():
@@ -37,14 +38,30 @@ def check_users_groups():
                     report.append(f"✅ User '{username}' has valid shell and home directory")
             
             if os.path.isdir(home_dir):
-                report.append("donne moi le message")
+                report.append(f"{home_dir} exists and is accessible")
             else:
                 report.append(f"❌ {home_dir} does not exist ! Bad configuration")
 
             if os.path.exists(shell):
-                report.append("donne le message")
+                report.append(f"✅ {shell} exists and is valid")
             else: 
-                report.append("donne le message")
+                report.append(f"❌ {shell} is not found on the system")
+
+    users = pwd.getpwall()
+
+    uids = [user.pw_uid for user in users]
+    uid_counts = Counter(uids)
+
+    user_names = [user.pw_name for user in users]
+    user_name_counts = Counter(user_names)
+
+    for uid, count in uid_counts.items():
+        if count > 1:
+            report.append(f"❌ UID {uid} is duplicated {count} times")
+
+    for user_name, count in user_name_counts.items():
+        if count > 1:
+            report.append(f"❌ Username {user_name} is duplicated {count} times")
 
     groups = grp.getgrall()
 
@@ -52,20 +69,44 @@ def check_users_groups():
     gid_counts = Counter(gids)
 
     group_names = [group.gr_name for group in groups]
-    group_name_counts = Counter(groups_name)
+    group_name_counts = Counter(group_names)
+
+    for gid, count in gid_counts.items():
+        if count > 1:
+            report.append(f"❌ GID {gid} is duplicated {count} times")
+
+    for name, count in group_name_counts.items():
+        if count > 1:
+            report.append(f"❌ Name {name} is duplicated {count} times")
+
+    check_file_perms('/etc/shadow',
+    "600", "✅ {path} permissions are correct",
+    "❌ {path} should be {expected} but is {actual}",
+    report
+    )
+
+    with open('/etc/shadow', 'r') as f:
+        lines = f.readlines()
+
+    for line in lines:
+        fields = line.strip.split(":")
+        username = fields[0]
+        hash = fields[1]
+        last_changed = fields[2]
+        max_days = fields[3]
+        min_days = fields[4]
+        warn = fields[5]
+        inactive = fields[6]
+        expire = fields[7]
+
+
+
+
+
 
 
     return report
 
-
-       
-       
-       
-    '''
-       uid en double
-       gid en double
-
-       '''
 
 
  
