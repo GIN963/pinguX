@@ -1,4 +1,7 @@
-
+# Dictionary defining each relevant field in the /etc/shadow file
+# Each entry contains:
+# - index: the position of the field in the colon-separated line
+# - empty_msg: the message to display when the field is empty
 shadow_fields = {
     "password_hash": {
         "index": 1,
@@ -30,10 +33,22 @@ shadow_fields = {
     }
 }
 
+# Generic function to evaluate shadow file fields (e.g., password aging policy)
+# Parameters:
+# - field_name: the key from the shadow_fields dict (used to get the empty message)
+# - field_value: the actual string value extracted from the shadow file
+# - check_func: lambda or function to evaluate the value
+# - success_msg: message to append to report if check passes
+# - fail_msg: message to append if the check fails
+# - report: the shared list collecting audit results
 def check_shadow(field_name, field_value, check_func, success_msg, fail_msg, report):
     if field_value is None or field_value == "":
+        # If field is missing or empty, append the associated warning
         report.append(f"{shadow_fields[field_name]['empty_msg']}")
     elif check_func(field_value):
+        # If check function passes, add success message
         report.append(success_msg)
     else:
+        # If check fails, add fail message
         report.append(fail_msg)
+
