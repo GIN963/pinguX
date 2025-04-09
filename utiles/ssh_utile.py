@@ -2,40 +2,6 @@ import os
 import subprocess
 import re
 
-# Generic function to validate an SSH directive from sshd_config
-# Parameters:
-# - lines: list of lines from the SSH config file
-# - regex: regex pattern to locate the directive (e.g., r'^Port\s+(\d+)')
-# - group_index: the capture group index containing the directive value
-# - report: the list where audit messages are appended
-# - check_func: function that checks if the value is secure (returns True/False)
-# - success_msg_func: function to generate success message (takes value as input)
-# - fail_msg_func: function to generate fail message (takes value as input)
-# - missing_msg: message to append if directive is not found at all
-def check_ssh_directive(lines, regex, group_index, report, check_func, success_msg_func, fail_msg_func, missing_msg):
-    
-    # Flag to track if the directive was found in the config file
-    flag = False
-
-    for thing in lines:
-        # Try to match the line with the given regex
-        match = re.search(regex, thing)
-        if match:
-            # Extract the directive value from the specified capture group
-            var = match.group(group_index)
-            flag = True
-
-            # Evaluate the value using the check function
-            if check_func(var):
-                report.append(success_msg_func(var))
-            else:
-                report.append(fail_msg_func(var))
-    
-    # If directive not found, append the missing directive warning
-    if not flag:
-        report.append(missing_msg)
-
-
 # Function to analyze the combined state of a directive (e.g. PasswordAuthentication)
 # and PubkeyAuthentication to determine if the SSH login setup is secure
 # Parameters:

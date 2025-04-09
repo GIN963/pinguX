@@ -142,6 +142,33 @@ def check_users_groups():
             f"✅ Account expiration is set to day {fields[7]}",
             f"⚠️ Account expiration ({fields[7]}) is far in the future or never", report)
 
+    '''
+    Checking for last connection of each user in lastlog file 
+    Wanted to parse /var/log/lastlog with a python module like pwd or grp 
+    but there is no module for lastlog so I've done it manually
+    ''' 
+    with open('/var/log/lastlog') as f:
+        lines = f.readlines()
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     return report
 
 
