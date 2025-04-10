@@ -1,11 +1,11 @@
+from collections import Counter
+from ung_utile import *
+from perms_utile import check_file_perms
 import subprocess
 import re
 import os
 import grp
 import pwd
-from collections import Counter
-from ung_utile import *
-from perms_utile import check_file_perms
 
 def check_users_groups():
     report = []
@@ -140,34 +140,7 @@ def check_users_groups():
 
         check_shadow('expire', fields[7], lambda x: int(x) <= 99999,
             f"✅ Account expiration is set to day {fields[7]}",
-            f"⚠️ Account expiration ({fields[7]}) is far in the future or never", report)
-
-    '''
-    Checking for last connection of each user in lastlog file 
-    Wanted to parse /var/log/lastlog with a python module like pwd or grp 
-    but there is no module for lastlog so I've done it manually
-    ''' 
-    with open('/var/log/lastlog') as f:
-        lines = f.readlines()
-
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
+            f"⚠️ Account expiration ({fields[7]}) is far in the future or never", report) 
     
     return report
 

@@ -1,7 +1,11 @@
+from datetime import datetime
+from dateutil import parser
+
 # Dictionary defining each relevant field in the /etc/shadow file
 # Each entry contains:
 # - index: the position of the field in the colon-separated line
 # - empty_msg: the message to display when the field is empty
+
 shadow_fields = {
     "password_hash": {
         "index": 1,
@@ -41,6 +45,7 @@ shadow_fields = {
 # - success_msg: message to append to report if check passes
 # - fail_msg: message to append if the check fails
 # - report: the shared list collecting audit results
+
 def check_shadow(field_name, field_value, check_func, success_msg, fail_msg, report):
     if field_value is None or field_value == "":
         # If field is missing or empty, append the associated warning
@@ -53,4 +58,23 @@ def check_shadow(field_name, field_value, check_func, success_msg, fail_msg, rep
         report.append(fail_msg)
 
 
+def check_last_login(date_str):
+    if date_str == "Never logged in":
+        return False
+    try:
+        login_date = parser.parse(date_str)
+        delta = (datetime.now() - login_date).days
+        return delta <= 60
+    except:
+        return False
+
+def warn_last_login(date_str):
+    if date_str == "Never logged in":
+        return False
+    try:
+        login_date = parser.parse(date_str)
+        delta = (datetime.now() - login_date).days
+        return 60 < delta <= 90
+    except:
+        return False
 

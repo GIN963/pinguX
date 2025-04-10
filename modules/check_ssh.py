@@ -1,5 +1,5 @@
 from utils.config_directive_checker import check_config_directive
-from utils.directives_config import SSH_DIRECTIVES
+from utils.dictionaries.ssh_directives_config import SSH_DIRECTIVES
 import argparse
 import os
 import subprocess
