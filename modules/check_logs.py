@@ -2,36 +2,19 @@ import os
 import subprocess
 import re
 from ung_utile import *
+from perms_config import *
 
 def check_logs():
     # Initialize log audit report
     report = []
 
-    # Check permissions for critical log files
-    check_file_perms(
-        '/var/log/faillog',
-        '600',
-        "✅ {path} permissions are correct",
-        "❌ {path} should be {expected} but is {actual}",
-        report
-    )
+    # Check permissions for critical files
+    for file, file_data in SENSITIVE_FILES.items():
+        check_file_perms(file_data["path"], file_data["expected"], file_data["success_msg"], file_data["error_msg"], report)
 
-    check_file_perms(
-        '/var/log/auth.log',
-        '600',
-        "✅ {path} permissions are correct",
-        "❌ {path} should be {expected} but is {actual}",
-        report
-    )
-
-    check_file_perms(
-        '/var/log/lastlog',
-        '600',
-        "✅ {path} permissions are correct",
-        "❌ {path} should be {expected} but is {actual}",
-        report
-    )
-
+    for dir, dir_data in SENSITIVE_DIRS.items():
+        check_dir_perms(dir_data["path"], dir_data["expected"], dir_data["success_msg"], dir_data["error_msg"], report)
+    
     # Parse last login data using 'lastlog' command
     # /var/log/lastlog is a binary file → we use the command to get a readable version
     lastlog_com = subprocess.run(['lastlog'], capture_output=True, text=True)

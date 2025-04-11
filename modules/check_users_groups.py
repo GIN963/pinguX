@@ -96,14 +96,7 @@ def check_users_groups():
         if count > 1:
             report.append(f"❌ Name {name} is duplicated {count} times")
 
-    # Check permissions of /etc/shadow file
-    check_file_perms(
-        '/etc/shadow',
-        "600",
-        "✅ {path} permissions are correct",
-        "❌ {path} should be {expected} but is {actual}",
-        report
-    )
+    # Permissions for shadow file are now handled in check_logs()
 
     # Parse the shadow file line by line
     with open('/etc/shadow', 'r') as f:

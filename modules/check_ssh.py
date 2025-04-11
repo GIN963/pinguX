@@ -90,18 +90,6 @@ def check_ssh():
                 if not data["found"]:
                     report.append(f"❌ {directive} directive not found")
 
-        # Check ~/.ssh directory permissions (should be 700)
-        check_dir_perms(
-            os.path.expanduser("~/.ssh"), "700",
-            "✅ {path} permissions are correct",
-            "❌ {path} should be {expected} but is {actual}",
-            report
-        )
+    # Permissions for authorized_keys file and .ssh dir are now handled in check_logs()
 
-        # Check ~/.ssh/authorized_keys file permissions (should be 600)
-        check_file_perms(
-            os.path.expanduser("~/.ssh/authorized_keys"), "600",
-            "✅ {path} permissions are correct",
-            "❌ {path} should be {expected} but is {actual}",
-            report
-        )
+    return report
