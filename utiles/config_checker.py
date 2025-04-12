@@ -55,3 +55,51 @@ def check_config_directive(
     # If directive was never found in the file
     if not flag:
         report.append(missing_msg)
+
+
+def check_config_service(
+    service_name, 
+    report, 
+    success_active_msg, 
+    fail_active_msg, 
+    success_enabled_msg, 
+    fail_enabled_msg, 
+    error_msg):
+    
+    """
+    Check whether a service is correctly installed, active, and enabled at boot.
+    Returns True if the service is installed and active, False otherwise.
+
+    Parameters:
+    - service_name: Name of the service to check (e.g. "ssh")
+    - report: List to append the results of the check
+    - success_active_msg: Message to show if service is active
+    - fail_active_msg: Message to show if service is inactive
+    - success_enabled_msg: Message to show if service is enabled at boot
+    - fail_enabled_msg: Message to show if service is not enabled at boot
+    - error_msg: Message to show if the service is not found or status command fails
+    """
+
+    is_active_flag = False
+    
+    # Check if the service is installed / recognized
+    service_status = subprocess.run(["systemctl", "status", service_name], capture_output=True, text=True)
+    if service_status.returncode == 0:
+        # Check if service is active
+        is_active = subprocess.run(["systemctl", "is-active", service_name], capture_output=True, text=True)
+        if is_active.stdout.strip() == "active":
+            report.append(success_active_msg)
+            is_active_flag = True
+        else:
+            report.append(fail_active_msg)
+
+        # Check if service is enabled at startup
+        is_enabled = subprocess.run(["systemctl", "is-enabled", service_name], capture_output=True, text=True)
+        if is_enabled.stdout.strip() == "enabled":
+            report.append(success_enabled_msg)
+        else:
+            report.append(fail_enabled_msg)
+    else:
+        report.append(error_msg)
+        
+    return is_active_flag

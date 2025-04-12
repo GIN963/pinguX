@@ -5,10 +5,10 @@ from ung_utile import *
 from perms_config import *
 
 def check_logs():
-    # Initialize log audit report
+    
     report = []
 
-    # Check permissions for critical files
+    # Check permissions for critical files and dirs
     for file, file_data in SENSITIVE_FILES.items():
         check_file_perms(file_data["path"], file_data["expected"], file_data["success_msg"], file_data["error_msg"], report)
 
