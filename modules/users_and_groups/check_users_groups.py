@@ -1,6 +1,6 @@
 from collections import Counter
 from ung_utile import *
-from perms_utile import check_file_perms
+from perms_util import check_file_perms
 import subprocess
 import re
 import os
@@ -96,7 +96,7 @@ def check_users_groups():
         if count > 1:
             report.append(f"❌ Name {name} is duplicated {count} times")
 
-    # Permissions for shadow file are now handled in check_logs()
+    # Permissions for shadow file are now handled in check_logs_n_perms.py
 
     # Parse the shadow file line by line
     with open('/etc/shadow', 'r') as f:

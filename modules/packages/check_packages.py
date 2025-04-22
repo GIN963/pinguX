@@ -1,5 +1,5 @@
 import subprocess
-from utiles.dictionaries.banned_packages import BANNED_PACKAGES
+from utils.dictionaries.banned_packages import BANNED_PACKAGES
 
 def check_packages():
     report = []

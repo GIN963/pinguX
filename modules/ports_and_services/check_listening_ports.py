@@ -1,9 +1,9 @@
 import subprocess
 import re
-from utiles.dictionaries.firewall_rules_config import WHITELIST, GREYLIST, BLACKLIST
-from utiles.dictionaries.server_roles_config import ROLE_PROCESS_MAP, DEFAULT_ACCEPTED_SERVICES
-from utiles.detect_server_role import detect_server_roles
-from utiles.get_process_list import get_process_list
+from utils.dictionaries.firewall_rules_config import WHITELIST, GREYLIST, BLACKLIST
+from utils.dictionaries.server_roles_config import ROLE_PROCESS_MAP, DEFAULT_ACCEPTED_SERVICES
+from utils.detect_server_role import detect_server_roles
+from utils.get_process_list import get_process_list
 
 def check_listening_ports():
     report = []

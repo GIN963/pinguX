@@ -90,6 +90,6 @@ def check_ssh():
                 if not data["found"]:
                     report.append(f"❌ {directive} directive not found")
 
-    # Permissions for authorized_keys file and .ssh dir are now handled in check_logs()
+    # Permissions for authorized_keys file and .ssh dir are now handled in check_logs_n_perms.py
 
     return report

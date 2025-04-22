@@ -1,8 +1,8 @@
 import os
 import subprocess
 import re
-from utiles.dictionaries.services_config import SENSITIVE_SERVICES
-from utiles.config_checker import *
+from utils.dictionaries.services_config import SENSITIVE_SERVICES
+from utils.config_checker import *
 
 def check_services():
     report = []

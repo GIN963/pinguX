@@ -1,5 +1,5 @@
 import subprocess
-from utiles.dictionaries.sysctl_config import SYSCTL_HARDENING_RULES
+from utils.dictionaries.sysctl_config import SYSCTL_HARDENING_RULES
 
 def check_sysctl():
     sysctl_output = {}

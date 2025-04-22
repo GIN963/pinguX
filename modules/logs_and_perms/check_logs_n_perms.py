@@ -1,10 +1,10 @@
 import os
 import subprocess
 import re
-from ung_utile import *
+from ung_util import *
 from perms_config import *
 
-def check_logs():
+def check_logs_n_perms():
     
     report = []
 
