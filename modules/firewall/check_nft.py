@@ -2,21 +2,13 @@ import argparse
 import os
 import subprocess
 import re
+from utls.whitelist_comparator import compare_firewall_rules
+from utils.dictionaries.firewall_whitelist import NFT_WHITELIST
 
 # ----- nftables -----
-def check_nftables():
+def scan_nftables():
     report = []
     allowed_ports = set()
-
-    # Define allowed rules (whitelist)
-    whitelist = {
-        ('22', 'tcp', 'in'),      # SSH
-        ('80', 'tcp', 'in'),      # HTTP
-        ('443', 'tcp', 'in'),     # HTTPS
-        ('53', 'udp', 'in'),      # DNS
-        ('123', 'udp', 'in'),     # NTP
-        ('icmp', None, 'in')      # Ping (ICMP)
-    }
 
     # Run the nft command to get the current ruleset
     nft_com = subprocess.run(['nft', 'list', 'ruleset'], capture_output=True, text=True)
@@ -59,17 +51,8 @@ def check_nftables():
         if re.search(r"ip\s+protocol\s+icmp\s+accept", rule):
             allowed_ports.add(("icmp", None, "in"))
 
-    # Check for missing expected rules
-    for rule in whitelist:
-        if rule not in allowed_ports:
-            report.append(f"⚠️ Rule {rule} is missing from current config")
-
-    # Check for unauthorized rules
-    for rule in allowed_ports:
-        if rule not in whitelist:
-            report.append(f"⚠️ Unauthorized rule: {rule}")
-        else:
-            report.append(f"✅ Authorized rule: {rule}")
+    comparison_report = compare_firewall_rules(NFT_WHITELIST,allowed_ports)
+    report.extend(comparison_report)
 
     return report
 

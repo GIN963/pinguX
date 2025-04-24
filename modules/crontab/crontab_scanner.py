@@ -4,7 +4,7 @@ from modules.crontab.crontab_scripts_audit import audit_script
 from modules.crontab.detect_dangerous_commands import check_dangerous_command
 from modules.crontab.check_frequency import check_frequency
 
-def check_crontab():
+def scan_crontab():
     report = []
 
     cron_dir = "/var/spool/cron/"

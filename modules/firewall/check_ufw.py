@@ -2,22 +2,13 @@ import argparse
 import os
 import subprocess
 import re
+from utls.whitelist_comparator import compare_firewall_rules
+from utils.dictionaries.firewall_whitelist import NFT_WHITELIST
 
 # ----- UFW -----
-def check_ufw():
+def scan_ufw():
     report = []
     allowed_ports = set()
-
-    whitelist = {
-        ('22', 'tcp', 'in'),
-        ('80', 'tcp', 'in'),
-        ('443', 'tcp', 'in'),
-        ('53', 'udp', 'out'),
-        ('80', 'tcp', 'out'),
-        ('443', 'tcp', 'out'),
-        ('123', 'udp', 'out'),
-        ('icmp', None, 'out')  # ping
-    }
 
     # Run "ufw status verbose" command and capture the output
     ufw_com = subprocess.run(['ufw', 'status', 'verbose'], capture_output=True, text=True)
@@ -56,16 +47,7 @@ def check_ufw():
             direction = match.group(3) or "in"
             allowed_ports.add((port, proto, direction))
 
-    # Checking which allowed rules are unauthorized
-    for rule in allowed_ports:
-        if rule not in whitelist:
-            report.append(f"⚠️ Unauthorized rule: {rule}")
-        else:
-            report.append(f"✅ Authorized rule: {rule}")
-
-    # Checking which whitelist rules are missing from current config
-    for rule in whitelist:
-        if rule not in allowed_ports:
-            report.append(f"⚠️ Rule {rule} is missing")
+    comparison_report = compare_firewall_rules(NFT_WHITELIST,allowed_ports)
+    report.extend(comparison_report)
 
     return report

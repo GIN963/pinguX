@@ -1,7 +1,7 @@
 import subprocess
 import re
 
-def check_ports_vs_firewall():
+def scan_ports_vs_firewall():
     report = []
     listening_ports = set()
     firewall_ports = set()

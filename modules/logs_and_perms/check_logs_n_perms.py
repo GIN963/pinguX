@@ -4,7 +4,7 @@ import re
 from ung_util import *
 from perms_config import *
 
-def check_logs_n_perms():
+def scan_logs_n_perms():
     
     report = []
 

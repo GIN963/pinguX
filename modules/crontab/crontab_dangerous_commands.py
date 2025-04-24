@@ -1,6 +1,6 @@
 from utils.dictionaries.dangerous_commands import DANGEROUS_COMMAND_PATTERNS
 
-def check_dangerous_command(command, user):
+def scan_dangerous_command(command, user):
     alerts = []
 
     # Convert the command to lowercase for case-insensitive matching

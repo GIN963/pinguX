@@ -1,4 +1,4 @@
-def check_frequency(minute, hour, user, command):
+def scan_frequency(minute, hour, user, command):
     """
     Check if the cron job runs too frequently.
 

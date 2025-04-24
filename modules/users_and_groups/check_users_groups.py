@@ -1,5 +1,5 @@
 from collections import Counter
-from ung_utile import *
+from ung_util import *
 from perms_util import check_file_perms
 import subprocess
 import re
@@ -7,7 +7,7 @@ import os
 import grp
 import pwd
 
-def check_users_groups():
+def scan_users_groups():
     report = []
 
     # List of valid interactive shells for regular users

@@ -4,7 +4,7 @@ import re
 from utils.dictionaries.services_config import SENSITIVE_SERVICES
 from utils.config_checker import *
 
-def check_services():
+def scan_services():
     report = []
     service_status = {}
 

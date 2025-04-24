@@ -6,7 +6,7 @@ import subprocess
 import re
 
 #----- SSH -----
-def check_ssh():
+def scan_ssh():
     # Initialize the directives to be cross-analyzed with PubkeyAuthentication
     directives = {
         "PasswordAuthentication": {

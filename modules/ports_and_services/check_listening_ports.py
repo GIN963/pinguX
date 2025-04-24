@@ -5,7 +5,7 @@ from utils.dictionaries.server_roles_config import ROLE_PROCESS_MAP, DEFAULT_ACC
 from utils.detect_server_role import detect_server_roles
 from utils.get_process_list import get_process_list
 
-def check_listening_ports():
+def scan_listening_ports():
     report = []
     processes_found = set()
     listening_entries = []

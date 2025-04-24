@@ -1,7 +1,7 @@
 import subprocess
 from utils.dictionaries.banned_packages import BANNED_PACKAGES
 
-def check_packages():
+def scan_packages():
     report = []
 
     # Get list of installed packages
