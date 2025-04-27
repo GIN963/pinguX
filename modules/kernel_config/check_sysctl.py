@@ -10,12 +10,14 @@ logging.basicConfig(
     datefmt='%H:%M:%S'
 )
 
+logger = logging.getLogger(__name__)
+
 def scan_sysctl():
     sysctl_output = {}
     report = []
 
     try:
-        logging.info("🔍 Starting sysctl scan...")
+        logging.info("=== Starting sysctl Audit ===")
 
         # Run sysctl -a to get active kernel values
         sysctl_com = subprocess.run(['sysctl', '-a'], capture_output=True, text=True, check=True)
@@ -77,5 +79,5 @@ def scan_sysctl():
             logging.warning(f"❌ {rule} is missing from sysctl.conf — should be added")
 
     report.append("📄 Detailed logs saved to pingux.log")
-    logging.info("✅ sysctl scan completed.")
+    logging.info("=== sysctl Audit Completed ===")
     return report

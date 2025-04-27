@@ -13,6 +13,8 @@ logging.basicConfig(
     datefmt='%H:%M:%S'
 )
 
+logger = logging.getLogger(__name__)
+
 # ----- nftables -----
 def scan_nftables():
     report = []
@@ -24,7 +26,7 @@ def scan_nftables():
         return report, allowed_ports
 
     try:
-        logging.info("🔍 Starting nftables scan...")
+        logging.info("=== Starting nftables Audit ===")
 
         # Run the nft command to get the current ruleset
         nft_com = subprocess.run(['nft', 'list', 'ruleset'], capture_output=True, text=True, check=True)
@@ -84,7 +86,7 @@ def scan_nftables():
         logging.error(f"❌ nftables command failed: {e}")
 
     report.append("📄 Detailed logs saved to pingux.log")
-    logging.info("✅ nftables scan completed.")
+    logging.info("=== nftables Audit Completed ===")
     return report, allowed_ports
 
 

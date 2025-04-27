@@ -11,13 +11,15 @@ logging.basicConfig(
     datefmt='%H:%M:%S'
 )
 
+logger = logging.getLogger(__name__)
+
 # ----- Compare Listening Ports vs Firewall -----
 def scan_ports_vs_firewall():
     report = []
     listening_ports = set()
 
     try:
-        logging.info("🔍 Starting listening ports scan using ss...")
+        logging.info("=== Starting ports Audit ===")
 
         # Step 1: Extract listening ports using ss
         ss_cmd = subprocess.run(['ss', '-tuln'], capture_output=True, text=True, check=True)
@@ -67,6 +69,6 @@ def scan_ports_vs_firewall():
         logging.error(f"❌ ss command failed: {e}")
 
     report.append("📄 Detailed logs saved to pingux.log")
-    logging.info("✅ scan_ports_vs_firewall completed.")
+    logging.info("=== Ports And Firewall Audit Completed ===")
     return report
 

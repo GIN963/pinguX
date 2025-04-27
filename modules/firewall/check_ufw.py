@@ -13,6 +13,8 @@ logging.basicConfig(
     datefmt='%H:%M:%S'
 )
 
+logger = logging.getLogger(__name__)
+
 # ----- UFW -----
 def scan_ufw():
     report = []
@@ -24,7 +26,7 @@ def scan_ufw():
         return report
 
     try:
-        logging.info("🔍 Starting UFW scan...")
+        logging.info("=== Starting UFW Audit ===")
 
         # Run "ufw status verbose" command
         ufw_com = subprocess.run(['ufw', 'status', 'verbose'], capture_output=True, text=True, check=True)
@@ -75,6 +77,6 @@ def scan_ufw():
         logging.error(f"❌ UFW command failed: {e}")
 
     report.append("📄 Detailed logs saved to pingux.log")
-    logging.info("✅ UFW scan completed.")
+    logging.info("=== UFW Audit Completed ===")
     return report
 

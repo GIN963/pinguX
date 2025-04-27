@@ -1,84 +1,115 @@
 import os
 import subprocess
 import re
-from ung_util import *
-from perms_config import *
+import logging
+from utils.ung_util import *
+from utils.dictionaries.perms_config import *
+
+# ----- Setup logging -----
+logging.basicConfig(
+    filename='pingux.log',
+    level=logging.INFO,
+    format='%(asctime)s - %(levelname)s - %(message)s',
+    datefmt='%H:%M:%S'
+)
+
+logger = logging.getLogger(__name__)
 
 def scan_logs_n_perms():
-    
     report = []
 
+    logger.info("=== Starting Log and Permissions Audit ===")
+
     # Check permissions for critical files and dirs
+    logger.info("Checking critical files permissions...")
     for file, file_data in SENSITIVE_FILES.items():
+        logger.info(f"Checking file: {file_data['path']}")
         check_file_perms(file_data["path"], file_data["expected"], file_data["success_msg"], file_data["error_msg"], report)
 
+    logger.info("Checking critical directories permissions...")
     for dir, dir_data in SENSITIVE_DIRS.items():
+        logger.info(f"Checking directory: {dir_data['path']}")
         check_dir_perms(dir_data["path"], dir_data["expected"], dir_data["success_msg"], dir_data["error_msg"], report)
-    
-    # Parse last login data using 'lastlog' command
-    # /var/log/lastlog is a binary file → we use the command to get a readable version
-    lastlog_com = subprocess.run(['lastlog'], capture_output=True, text=True)
-    lines = lastlog_com.stdout.strip().splitlines()[1:]  # Skip header
 
-    check_config_directive(
-        lines,
-        r'^\s*(\S+)\s+\S+\s+\S+\s+(.*\d{4})$',  # Extract the last login date
-        2,
-        report,
-        check_func=check_last_login,
-        success_msg_func=lambda d: f"✅ Last login was at {d} (OK)",
-        fail_msg_func=lambda d: f"❌ Last login was at {d} → account might be inactive for too long",
-        missing_msg="❌ No lastlog data found",
-        warning_func=warn_last_login,
-        warning_msg_func=lambda d: f"⚠️ Last login was at {d} → user is becoming inactive"
-    )
+    # Parse last login data using 'lastlog'
+    logger.info("Parsing last login data using 'lastlog' command...")
+    try:
+        lastlog_com = subprocess.run(['lastlog'], capture_output=True, text=True, check=True)
+        lines = lastlog_com.stdout.strip().splitlines()[1:]
+
+        check_config_directive(
+            lines,
+            r'^\s*(\S+)\s+\S+\s+\S+\s+(.*\d{4})$',
+            2,
+            report,
+            check_func=check_last_login,
+            success_msg_func=lambda d: f"✅ Last login was at {d} (OK)",
+            fail_msg_func=lambda d: f"❌ Last login was at {d} → account might be inactive for too long",
+            missing_msg="❌ No lastlog data found",
+            warning_func=warn_last_login,
+            warning_msg_func=lambda d: f"⚠️ Last login was at {d} → user is becoming inactive"
+        )
+    except subprocess.CalledProcessError as e:
+        logger.error(f"Failed to run 'lastlog' command: {e}")
+        report.append(f"[❌] Failed to run 'lastlog' command: {e}")
 
     # Analyze failed login attempts using 'faillog'
-    faillog_com = subprocess.run(['faillog'], capture_output=True, text=True)
-    lines = faillog_com.stdout.strip().splitlines()[1:]  # Skip header
+    logger.info("Analyzing failed login attempts with 'faillog' command...")
+    try:
+        faillog_com = subprocess.run(['faillog'], capture_output=True, text=True, check=True)
+        lines = faillog_com.stdout.strip().splitlines()[1:]
 
-    for line in lines:
-        match = re.search(r'^\s*(\S+)\s+(\d+)\s+(.*)$', line)
-        if match:
-            user = match.group(1)
-            fails = match.group(2)
-            optional = match.group(3)
+        for line in lines:
+            match = re.search(r'^\s*(\S+)\s+(\d+)\s+(.*)$', line)
+            if match:
+                user = match.group(1)
+                fails = match.group(2)
+                optional = match.group(3)
 
-            # No failures
-            if fails == "0":
-                if optional.strip() == "":
-                    report.append(f"✅ No recent failed login record found for user '{user}'")
+                if fails == "0":
+                    if optional.strip() == "":
+                        report.append(f"✅ No recent failed login record found for user '{user}'")
+                        logger.info(f"✅ No recent failed login record found for user '{user}'")
+                    else:
+                        report.append(f"✅ User '{user}' has no failed login attempts (last failure was at {optional.strip()})")
+                        logger.info(f"✅ User '{user}' has no failed login attempts (last failure was at {optional.strip()})")
+
+                elif 1 <= int(fails) <= 5:
+                    report.append(f"⚠️ User '{user}' has {fails} failed login attempt(s) → monitor the account")
+                    logger.warning(f"⚠️ User '{user}' has {fails} failed login attempt(s) → monitor the account")
+
+                elif int(fails) > 5:
+                    report.append(f"❌ User '{user}' has {fails} failed login attempts → potential brute-force or suspicious activity")
+                    logger.error(f"❌ User '{user}' has {fails} failed login attempts → potential brute-force or suspicious activity")
+
                 else:
-                    report.append(f"✅ User '{user}' has no failed login attempts (last failure was at {optional.strip()})")
+                    report.append(f"❌ Unable to determine failure count for user '{user}'")
+                    logger.error(f"❌ Unable to determine failure count for user '{user}'")
 
-            # 1 to 5 failures → warning
-            elif 1 <= int(fails) <= 5:
-                report.append(f"⚠️ User '{user}' has {fails} failed login attempt(s) → monitor the account")
+    except subprocess.CalledProcessError as e:
+        logger.error(f"Failed to run 'faillog' command: {e}")
+        report.append(f"[❌] Failed to run 'faillog' command: {e}")
 
-            # More than 5 failures → critical
-            elif int(fails) > 5:
-                report.append(f"❌ User '{user}' has {fails} failed login attempts → potential brute-force or suspicious activity")
+    # Check if Fail2Ban is active
+    logger.info("Checking Fail2Ban service status...")
+    try:
+        fail2ban_com = subprocess.run(['systemctl', 'is-active', 'fail2ban'], capture_output=True, text=True, check=True)
+        status = fail2ban_com.stdout.strip()
 
-            # Parsing issue
-            else:
-                report.append(f"❌ Unable to determine failure count for user '{user}'")
+        if status == 'active':
+            logger.info("✅ Fail2Ban is active and running.")
+            report.append("✅ Fail2Ban is active and running.")
+        else:
+            logger.warning("❌ Fail2Ban is not active or not installed.")
+            report.append("❌ Fail2Ban is not active or not installed.")
 
-    # Check if Fail2Ban is active using systemctl
-    fail2ban_com = subprocess.run(['systemctl', 'is-active', 'fail2ban'], capture_output=True, text=True)
-    status = fail2ban_com.stdout.strip()
+    except subprocess.CalledProcessError as e:
+        logger.error(f"Failed to check Fail2Ban status: {e}")
+        report.append(f"[❌] Failed to check Fail2Ban status: {e}")
 
-    if status == 'active':
-        report.append("✅ Fail2Ban is active and running.")
-    else:
-        report.append("❌ Fail2Ban is not active or not installed.")
-
+    report.append("📄 Detailed logs saved to pingux.log")
+    logger.info("=== Log and Permissions Audit Completed ===")
     return report
-
-
-
-
-
-
 
 
 

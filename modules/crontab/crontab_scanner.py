@@ -13,11 +13,13 @@ logging.basicConfig(
     datefmt='%H:%M:%S'
 )
 
+logger = logging.getLogger(__name__)
+
 def scan_crontab():
     report = []
 
     cron_dir = "/var/spool/cron/"
-    logging.info("🔍 Starting crontab scan...")
+    logging.info("=== Starting crontab Audit ===")
 
     if not os.path.exists(cron_dir):
         report.append(f"[❌] Cron directory not found: {cron_dir}")
@@ -88,7 +90,7 @@ def scan_crontab():
                 logging.error(f"❌ Error analyzing cron job '{command}' for {user}: {e}")
 
     report.append("📄 Detailed logs saved to pingux.log")
-    logging.info("✅ scan_crontab completed.")
+    logging.info("=== crontab Audit Completed ===")
     return report
 
 
