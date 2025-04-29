@@ -27,50 +27,50 @@ SENSITIVE_FILES = {
     "Shadow": {
         "path": "/etc/shadow",
         "expected": "600",
-        "success_msg": "✅ {path} permissions are correct",
-        "error_msg": "❌ {path} should be {expected} but is {actual}"
+        "success_msg": "[OK] {path} permissions are correct",
+        "error_msg": "[FAIL] {path} should be {expected} but is {actual}"
     },
     "Passwd": {
         "path": "/etc/passwd",
         "expected": "644",
-        "success_msg": "✅ {path} permissions are correct",
-        "error_msg": "❌ {path} should be {expected} but is {actual}"
+        "success_msg": "[OK] {path} permissions are correct",
+        "error_msg": "[FAIL] {path} should be {expected} but is {actual}"
     },
     "Group": {
         "path": "/etc/group",
         "expected": "644",
-        "success_msg": "✅ {path} permissions are correct",
-        "error_msg": "❌ {path} should be {expected} but is {actual}"
+        "success_msg": "[OK] {path} permissions are correct",
+        "error_msg": "[FAIL] {path} should be {expected} but is {actual}"
     },
     "Sudoers": {
         "path": "/etc/sudoers",
         "expected": "440",
-        "success_msg": "✅ {path} permissions are correct",
-        "error_msg": "❌ {path} should be {expected} but is {actual}"
+        "success_msg": "[OK] {path} permissions are correct",
+        "error_msg": "[FAIL] {path} should be {expected} but is {actual}"
     },
     "Faillog": {
         "path": "/var/log/faillog",
         "expected": "600",
-        "success_msg": "✅ {path} permissions are correct",
-        "error_msg": "❌ {path} should be {expected} but is {actual}"
+        "success_msg": "[OK] {path} permissions are correct",
+        "error_msg": "[FAIL] {path} should be {expected} but is {actual}"
     },
     "Auth.log": {
         "path": "/var/log/auth.log",
         "expected": "600",
-        "success_msg": "✅ {path} permissions are correct",
-        "error_msg": "❌ {path} should be {expected} but is {actual}"
+        "success_msg": "[OK] {path} permissions are correct",
+        "error_msg": "[FAIL] {path} should be {expected} but is {actual}"
     },
     "Lastlog": {
         "path": "/var/log/lastlog",
         "expected": "600",
-        "success_msg": "✅ {path} permissions are correct",
-        "error_msg": "❌ {path} should be {expected} but is {actual}"
+        "success_msg": "[OK] {path} permissions are correct",
+        "error_msg": "[FAIL] {path} should be {expected} but is {actual}"
     },
     "Authorized_keys": {
         "path": "~/.ssh/authorized_keys",
         "expected": "600",
-        "success_msg": "✅ {path} permissions are correct",
-        "error_msg": "❌ {path} should be {expected} but is {actual}"
+        "success_msg": "[OK] {path} permissions are correct",
+        "error_msg": "[FAIL] {path} should be {expected} but is {actual}"
     }
 }
 
@@ -78,31 +78,31 @@ SENSITIVE_DIRS = {
     ".ssh": {
         "path": "~/.ssh",
         "expected": "700",
-        "success_msg": "✅ {path} permissions are correct",
-        "error_msg": "❌ {path} should be {expected} but is {actual}"
+        "success_msg": "[OK] {path} permissions are correct",
+        "error_msg": "[FAIL] {path} should be {expected} but is {actual}"
     },
     "Root": {
         "path": "/root",
         "expected": "700",
-        "success_msg": "✅ {path} permissions are correct",
-        "error_msg": "❌ {path} should be {expected} but is {actual}"
+        "success_msg": "[OK] {path} permissions are correct",
+        "error_msg": "[FAIL] {path} should be {expected} but is {actual}"
     },
     "Home": {
         "path": "/home",
         "expected": "755",
-        "success_msg": "✅ {path} permissions are correct",
-        "error_msg": "❌ {path} should be {expected} but is {actual}"
+        "success_msg": "[OK] {path} permissions are correct",
+        "error_msg": "[FAIL] {path} should be {expected} but is {actual}"
     },
     "Tmp": {
         "path": "/tmp",
         "expected": "1777",
-        "success_msg": "✅ {path} permissions are correct (sticky bit set)",
-        "error_msg": "❌ {path} should be {expected} but is {actual}"
+        "success_msg": "[OK] {path} permissions are correct (sticky bit set)",
+        "error_msg": "[FAIL] {path} should be {expected} but is {actual}"
     },
     "VarTmp": {
         "path": "/var/tmp",
         "expected": "1777",
-        "success_msg": "✅ {path} permissions are correct (sticky bit set)",
-        "error_msg": "❌ {path} should be {expected} but is {actual}"
+        "success_msg": "[OK] {path} permissions are correct (sticky bit set)",
+        "error_msg": "[FAIL] {path} should be {expected} but is {actual}"
     }
 }

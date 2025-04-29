@@ -51,5 +51,5 @@ def check_file_perms(path, expected_perms, success_msg, error_msg, report):
             report.append(success_msg.format(path=path))
     else:
         # File not found
-        report.append(f"⚠️ {path} file not found")
+        report.append(f"[FAIL] {path} file not found")
 

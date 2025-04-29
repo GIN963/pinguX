@@ -16,7 +16,7 @@ def analyze_auth_methods(primary_value, key_value, report, context):
     # and PubkeyAuthentication is enabled → secure setup
     
     if primary_value == "no" and key_value == "yes":
-        report.append(f"✅ {context} is disabled & PubkeyAuthentication is enabled")
+        report.append(f"[OK] {context} is disabled & PubkeyAuthentication is enabled")
 
     # Case 2: PasswordAuthentication or PermitEmptyPasswords is disabled
     # but PubkeyAuthentication is not configured or is disabled
@@ -24,10 +24,10 @@ def analyze_auth_methods(primary_value, key_value, report, context):
     
     elif primary_value == "no" and (key_value is None or key_value == "no"):
         report.append(
-            f"⚠️ {context} is disabled, but PubkeyAuthentication is either disabled or not configured → SSH login might be impossible."
+            f"[WARNING] {context} is disabled, but PubkeyAuthentication is either disabled or not configured → SSH login might be impossible."
         )
 
     # Case 3: One or both are enabled → security hardening needed
     
     else:
-        report.append(f"❌ Make sure to disable {context} and enable PubkeyAuthentication")
+        report.append(f"[WARNING] Make sure to disable {context} and enable PubkeyAuthentication")

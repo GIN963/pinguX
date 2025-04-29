@@ -10,7 +10,7 @@ def scan_dangerous_command(command, user):
         # If the pattern is found in the command
         if pattern in cmd_lower:
             # Add an alert with the user and the pattern detected
-            alerts.append(f"❌ Dangerous pattern detected for user '{user}': '{pattern}' in command '{command}'")
+            alerts.append(f"[WARNING] Dangerous pattern detected for user '{user}': '{pattern}' in command '{command}'")
 
     return alerts
 

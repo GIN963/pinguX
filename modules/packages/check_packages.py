@@ -24,25 +24,25 @@ def scan_packages():
         logger.info(f"Found {len(packages)} installed packages.")
     except subprocess.CalledProcessError as e:
         logger.error(f"Failed to list installed packages: {e}")
-        report.append(f"[❌] Failed to list installed packages: {e}")
+        report.append(f"[FAIL] Failed to list installed packages: {e}")
         return report
 
     # Check for banned packages
     banned_found = False
     for pkg in packages:
         if pkg in BANNED_PACKAGES:
-            report.append(f"❌ {pkg} is installed — {BANNED_PACKAGES[pkg]}")
-            logger.warning(f"❌ {pkg} is installed — {BANNED_PACKAGES[pkg]}")
+            report.append(f"[WARNING] {pkg} is installed — {BANNED_PACKAGES[pkg]}")
+            logger.warning(f"[WARNING] {pkg} is installed — {BANNED_PACKAGES[pkg]}")
             banned_found = True
 
     # Summary
     if not banned_found:
-        report.append("✅ No dangerous packages detected")
-        logger.info("✅ No dangerous packages detected")
+        report.append("[OK] No dangerous packages detected")
+        logger.info("[OK] No dangerous packages detected")
     else:
-        report.append("🔍 Scan completed — dangerous packages listed above")
-        logger.info("🔍 Scan completed — dangerous packages listed above")
+        report.append("[INFO] Scan completed — dangerous packages listed above")
+        logger.info("[INFO] Scan completed — dangerous packages listed above")
 
-    report.append("📄 Detailed logs saved to pingux.log")
+    report.append("[DETAILS] Detailed logs saved to pingux.log")
     logger.info("=== Package Scan Completed ===")
     return report

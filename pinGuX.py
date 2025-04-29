@@ -5,7 +5,7 @@ import argparse
 import sys
 
 if os.geteuid() != 0:
-    print("❌ This script must be run as root. Try using 'sudo'.")
+    print("[FAIL] This script must be run as root. Try using 'sudo'.")
     sys.exit(1)
 
 # Module imports

@@ -1,181 +1,163 @@
-# ==============================================================================
-# SENSITIVE_SERVICES - Dictionary containing critical or sensitive services
-# ------------------------------------------------------------------------------
-# Each entry corresponds to a service to audit on the system.
-# Structure of each service:
-#   - 'description'      : Brief explanation of the service's purpose.
-#   - 'criticality'      : Security impact level ("low", "medium", "high").
-#   - 'active_msg'       : Message if the service is running.
-#   - 'inactive_msg'     : Message if the service is not running.
-#   - 'enabled_msg'      : Message if the service is enabled at boot.
-#   - 'disabled_msg'     : Message if the service is not enabled at boot.
-#   - 'not_found_msg'    : Message if the service is not found or systemctl fails.
-#   - 'recommendation'   : Security advice related to this service.
-# ------------------------------------------------------------------------------
-# This dictionary is used by audit_sensitive_services() and check_config_service()
-# to automate system service auditing in a modular and maintainable way.
-# ==============================================================================
-
 SENSITIVE_SERVICES = {
     "ufw": {
         "description": "Uncomplicated Firewall - frontend for iptables",
         "criticality": "high",
-        "active_msg": "[✔] UFW is active.",
-        "inactive_msg": "[✘] UFW is not active.",
-        "enabled_msg": "[✔] UFW is enabled at boot.",
-        "disabled_msg": "[✘] UFW is not enabled at boot.",
-        "not_found_msg": "[❌] UFW is not installed or the command failed.",
-        "recommendation": "🛡️ If you're using UFW, make sure it's enabled and properly configured with secure default policies and limited access rules."
+        "active_msg": "[OK] UFW is active.",
+        "inactive_msg": "[FAIL] UFW is not active.",
+        "enabled_msg": "[OK] UFW is enabled at boot.",
+        "disabled_msg": "[FAIL] UFW is not enabled at boot.",
+        "not_found_msg": "[ERROR] UFW is not installed or the command failed.",
+        "recommendation": "[RECOMMENDATION] If UFW is used, ensure it is enabled with secure default policies and restricted access rules."
     },
     "nftables": {
         "description": "Linux packet filtering framework replacing iptables",
         "criticality": "high",
-        "active_msg": "[✔] nftables is active (ruleset found).",
-        "inactive_msg": "[✘] nftables is not active (no ruleset found).",
-        "enabled_msg": "[✔] nftables is enabled at boot.",
-        "disabled_msg": "[✘] nftables is not enabled at boot.",
-        "not_found_msg": "[❌] nftables is not installed or the command failed.",
-        "recommendation": "🛡️ Ensure nftables is properly configured with 'inet filter' table, secure hook policies, and minimal allowed traffic."
+        "active_msg": "[OK] nftables is active (ruleset found).",
+        "inactive_msg": "[FAIL] nftables is not active (no ruleset found).",
+        "enabled_msg": "[OK] nftables is enabled at boot.",
+        "disabled_msg": "[FAIL] nftables is not enabled at boot.",
+        "not_found_msg": "[ERROR] nftables is not installed or the command failed.",
+        "recommendation": "[RECOMMENDATION] Ensure nftables has a proper 'inet filter' table with strict hook policies and minimal allowed traffic."
     },
     "telnet": {
-        "description": "Service d'accès distant non chiffré",
+        "description": "Unencrypted remote access service",
         "criticality": "high",
-        "active_msg": "[✘] Le service 'telnet' est actif. Cela représente un risque de sécurité.",
-        "inactive_msg": "[✔] Le service 'telnet' n'est pas actif.",
-        "enabled_msg": "[✘] Le service 'telnet' est activé au démarrage.",
-        "disabled_msg": "[✔] Le service 'telnet' n'est pas activé au démarrage.",
-        "not_found_msg": "[❌] Le service 'telnet' est introuvable ou systemctl a échoué.",
-        "recommendation": "❗ Désactivez immédiatement Telnet et utilisez SSH à la place."
+        "active_msg": "[FAIL] 'telnet' service is active. This is a security risk.",
+        "inactive_msg": "[OK] 'telnet' service is not active.",
+        "enabled_msg": "[FAIL] 'telnet' service is enabled at boot.",
+        "disabled_msg": "[OK] 'telnet' service is not enabled at boot.",
+        "not_found_msg": "[ERROR] 'telnet' service is missing or systemctl failed.",
+        "recommendation": "[RECOMMENDATION] Disable Telnet immediately and use SSH instead."
     },
     "ftp": {
-        "description": "Protocole de transfert de fichiers non sécurisé",
+        "description": "Unsecured file transfer protocol",
         "criticality": "high",
-        "active_msg": "[✘] Le service 'ftp' est actif. FTP transmet les données en clair.",
-        "inactive_msg": "[✔] Le service 'ftp' n'est pas actif.",
-        "enabled_msg": "[✘] Le service 'ftp' est activé au démarrage.",
-        "disabled_msg": "[✔] Le service 'ftp' n'est pas activé au démarrage.",
-        "not_found_msg": "[❌] Le service 'ftp' est introuvable ou systemctl a échoué.",
-        "recommendation": "❗ Utilisez SFTP ou SCP à la place de FTP."
+        "active_msg": "[FAIL] 'ftp' service is active. FTP transmits data in cleartext.",
+        "inactive_msg": "[OK] 'ftp' service is not active.",
+        "enabled_msg": "[FAIL] 'ftp' service is enabled at boot.",
+        "disabled_msg": "[OK] 'ftp' service is not enabled at boot.",
+        "not_found_msg": "[ERROR] 'ftp' service is missing or systemctl failed.",
+        "recommendation": "[RECOMMENDATION] Use SFTP or SCP instead of FTP."
     },
     "rsh": {
-        "description": "Remote Shell, accès distant sans chiffrement",
+        "description": "Remote Shell - unencrypted remote access",
         "criticality": "high",
-        "active_msg": "[✘] Le service 'rsh' est actif.",
-        "inactive_msg": "[✔] Le service 'rsh' n'est pas actif.",
-        "enabled_msg": "[✘] Le service 'rsh' est activé au démarrage.",
-        "disabled_msg": "[✔] Le service 'rsh' n'est pas activé au démarrage.",
-        "not_found_msg": "[❌] Le service 'rsh' est introuvable.",
-        "recommendation": "❗ Supprimez RSH et utilisez SSH à la place."
+        "active_msg": "[FAIL] 'rsh' service is active.",
+        "inactive_msg": "[OK] 'rsh' service is not active.",
+        "enabled_msg": "[FAIL] 'rsh' service is enabled at boot.",
+        "disabled_msg": "[OK] 'rsh' service is not enabled at boot.",
+        "not_found_msg": "[ERROR] 'rsh' service is missing.",
+        "recommendation": "[RECOMMENDATION] Remove RSH and use SSH instead."
     },
     "rlogin": {
-        "description": "Connexion distante non sécurisée via rlogin",
+        "description": "Remote login - unencrypted access via rlogin",
         "criticality": "high",
-        "active_msg": "[✘] Le service 'rlogin' est actif.",
-        "inactive_msg": "[✔] Le service 'rlogin' n'est pas actif.",
-        "enabled_msg": "[✘] Le service 'rlogin' est activé au démarrage.",
-        "disabled_msg": "[✔] Le service 'rlogin' n'est pas activé au démarrage.",
-        "not_found_msg": "[❌] Le service 'rlogin' est introuvable.",
-        "recommendation": "❗ Désactivez rlogin et utilisez SSH avec clés d'authentification."
+        "active_msg": "[FAIL] 'rlogin' service is active.",
+        "inactive_msg": "[OK] 'rlogin' service is not active.",
+        "enabled_msg": "[FAIL] 'rlogin' service is enabled at boot.",
+        "disabled_msg": "[OK] 'rlogin' service is not enabled at boot.",
+        "not_found_msg": "[ERROR] 'rlogin' service is missing.",
+        "recommendation": "[RECOMMENDATION] Disable rlogin and use SSH with key-based authentication."
     },
     "apache2": {
-        "description": "Serveur web Apache",
+        "description": "Apache web server",
         "criticality": "medium",
-        "active_msg": "[✔] Le service 'apache2' est actif.",
-        "inactive_msg": "[✘] Le service 'apache2' n'est pas actif.",
-        "enabled_msg": "[✔] Le service 'apache2' est activé au démarrage.",
-        "disabled_msg": "[✘] Le service 'apache2' n'est pas activé au démarrage.",
-        "not_found_msg": "[❌] Le service 'apache2' est introuvable.",
-        "recommendation": "🔍 Vérifiez que HTTPS est activé, que les headers de sécurité sont bien configurés, et que le service est à jour."
+        "active_msg": "[OK] 'apache2' service is active.",
+        "inactive_msg": "[FAIL] 'apache2' service is not active.",
+        "enabled_msg": "[OK] 'apache2' service is enabled at boot.",
+        "disabled_msg": "[FAIL] 'apache2' service is not enabled at boot.",
+        "not_found_msg": "[ERROR] 'apache2' service is missing.",
+        "recommendation": "[RECOMMENDATION] Enable HTTPS, configure security headers, and keep the server updated."
     },
     "nginx": {
-        "description": "Serveur web Nginx",
+        "description": "Nginx web server",
         "criticality": "medium",
-        "active_msg": "[✔] Le service 'nginx' est actif.",
-        "inactive_msg": "[✘] Le service 'nginx' n'est pas actif.",
-        "enabled_msg": "[✔] Le service 'nginx' est activé au démarrage.",
-        "disabled_msg": "[✘] Le service 'nginx' n'est pas activé au démarrage.",
-        "not_found_msg": "[❌] Le service 'nginx' est introuvable.",
-        "recommendation": "🔍 Activez le HTTPS, configurez les headers de sécurité, et appliquez les dernières mises à jour."
+        "active_msg": "[OK] 'nginx' service is active.",
+        "inactive_msg": "[FAIL] 'nginx' service is not active.",
+        "enabled_msg": "[OK] 'nginx' service is enabled at boot.",
+        "disabled_msg": "[FAIL] 'nginx' service is not enabled at boot.",
+        "not_found_msg": "[ERROR] 'nginx' service is missing.",
+        "recommendation": "[RECOMMENDATION] Enable HTTPS, configure security headers, and keep the server updated."
     },
     "vsftpd": {
-        "description": "Serveur FTP sécurisé (vsftpd)",
+        "description": "Secure FTP server (vsftpd)",
         "criticality": "high",
-        "active_msg": "[✘] Le service 'vsftpd' est actif.",
-        "inactive_msg": "[✔] Le service 'vsftpd' n'est pas actif.",
-        "enabled_msg": "[✘] Le service 'vsftpd' est activé au démarrage.",
-        "disabled_msg": "[✔] Le service 'vsftpd' n'est pas activé au démarrage.",
-        "not_found_msg": "[❌] Le service 'vsftpd' est introuvable.",
-        "recommendation": "⚠️ Activez TLS si vous utilisez vsftpd et restreignez les utilisateurs. Préférez SFTP si possible."
+        "active_msg": "[FAIL] 'vsftpd' service is active.",
+        "inactive_msg": "[OK] 'vsftpd' service is not active.",
+        "enabled_msg": "[FAIL] 'vsftpd' service is enabled at boot.",
+        "disabled_msg": "[OK] 'vsftpd' service is not enabled at boot.",
+        "not_found_msg": "[ERROR] 'vsftpd' service is missing.",
+        "recommendation": "[RECOMMENDATION] If using vsftpd, enable TLS and restrict users. Prefer SFTP if possible."
     },
     "smb": {
-        "description": "Partages de fichiers Windows (Samba/SMB)",
+        "description": "Windows file sharing service (Samba/SMB)",
         "criticality": "medium",
-        "active_msg": "[✔] Le service 'smb' est actif.",
-        "inactive_msg": "[✘] Le service 'smb' n'est pas actif.",
-        "enabled_msg": "[✔] Le service 'smb' est activé au démarrage.",
-        "disabled_msg": "[✘] Le service 'smb' n'est pas activé au démarrage.",
-        "not_found_msg": "[❌] Le service 'smb' est introuvable.",
-        "recommendation": "🔒 Limitez les partages publics, utilisez SMBv3 avec chiffrement, et filtrez par adresse IP ou utilisateur."
+        "active_msg": "[OK] 'smb' service is active.",
+        "inactive_msg": "[FAIL] 'smb' service is not active.",
+        "enabled_msg": "[OK] 'smb' service is enabled at boot.",
+        "disabled_msg": "[FAIL] 'smb' service is not enabled at boot.",
+        "not_found_msg": "[ERROR] 'smb' service is missing.",
+        "recommendation": "[RECOMMENDATION] Limit public shares, use SMBv3 with encryption, and restrict access by IP or user."
     },
     "cups": {
-        "description": "Service d'impression réseau (CUPS)",
+        "description": "Network printing service (CUPS)",
         "criticality": "low",
-        "active_msg": "[✔] Le service 'cups' est actif.",
-        "inactive_msg": "[✘] Le service 'cups' n'est pas actif.",
-        "enabled_msg": "[✔] Le service 'cups' est activé au démarrage.",
-        "disabled_msg": "[✘] Le service 'cups' n'est pas activé au démarrage.",
-        "not_found_msg": "[❌] Le service 'cups' est introuvable.",
-        "recommendation": "📄 Désactivez CUPS si l'impression réseau n'est pas nécessaire, surtout sur un serveur."
+        "active_msg": "[OK] 'cups' service is active.",
+        "inactive_msg": "[FAIL] 'cups' service is not active.",
+        "enabled_msg": "[OK] 'cups' service is enabled at boot.",
+        "disabled_msg": "[FAIL] 'cups' service is not enabled at boot.",
+        "not_found_msg": "[ERROR] 'cups' service is missing.",
+        "recommendation": "[RECOMMENDATION] Disable CUPS if not needed, especially on servers."
     },
     "mysql": {
-        "description": "Serveur de base de données MySQL ou MariaDB",
+        "description": "MySQL or MariaDB database server",
         "criticality": "medium",
-        "active_msg": "[✔] Le service 'mysql' est actif.",
-        "inactive_msg": "[✘] Le service 'mysql' n'est pas actif.",
-        "enabled_msg": "[✔] Le service 'mysql' est activé au démarrage.",
-        "disabled_msg": "[✘] Le service 'mysql' n'est pas activé au démarrage.",
-        "not_found_msg": "[❌] Le service 'mysql' est introuvable.",
-        "recommendation": "🔐 Limitez l'écoute à localhost et changez tous les mots de passe par défaut."
+        "active_msg": "[OK] 'mysql' service is active.",
+        "inactive_msg": "[FAIL] 'mysql' service is not active.",
+        "enabled_msg": "[OK] 'mysql' service is enabled at boot.",
+        "disabled_msg": "[FAIL] 'mysql' service is not enabled at boot.",
+        "not_found_msg": "[ERROR] 'mysql' service is missing.",
+        "recommendation": "[RECOMMENDATION] Limit access to localhost and change all default passwords."
     },
     "postgresql": {
-        "description": "Serveur de base de données PostgreSQL",
+        "description": "PostgreSQL database server",
         "criticality": "medium",
-        "active_msg": "[✔] Le service 'postgresql' est actif.",
-        "inactive_msg": "[✘] Le service 'postgresql' n'est pas actif.",
-        "enabled_msg": "[✔] Le service 'postgresql' est activé au démarrage.",
-        "disabled_msg": "[✘] Le service 'postgresql' n'est pas activé au démarrage.",
-        "not_found_msg": "[❌] Le service 'postgresql' est introuvable.",
-        "recommendation": "🔐 Limitez l'accès réseau, utilisez l'authentification par certificat, et tenez le système à jour."
+        "active_msg": "[OK] 'postgresql' service is active.",
+        "inactive_msg": "[FAIL] 'postgresql' service is not active.",
+        "enabled_msg": "[OK] 'postgresql' service is enabled at boot.",
+        "disabled_msg": "[FAIL] 'postgresql' service is not enabled at boot.",
+        "not_found_msg": "[ERROR] 'postgresql' service is missing.",
+        "recommendation": "[RECOMMENDATION] Restrict network access, use certificate-based auth, and apply security updates."
     },
     "docker": {
-        "description": "Moteur de conteneurisation Docker",
+        "description": "Docker container engine",
         "criticality": "high",
-        "active_msg": "[✔] Le service 'docker' est actif.",
-        "inactive_msg": "[✘] Le service 'docker' n'est pas actif.",
-        "enabled_msg": "[✔] Le service 'docker' est activé au démarrage.",
-        "disabled_msg": "[✘] Le service 'docker' n'est pas activé au démarrage.",
-        "not_found_msg": "[❌] Le service 'docker' est introuvable.",
-        "recommendation": "⚠️ Restreignez les utilisateurs du groupe docker et désactivez les conteneurs avec privilèges si possible."
+        "active_msg": "[OK] 'docker' service is active.",
+        "inactive_msg": "[FAIL] 'docker' service is not active.",
+        "enabled_msg": "[OK] 'docker' service is enabled at boot.",
+        "disabled_msg": "[FAIL] 'docker' service is not enabled at boot.",
+        "not_found_msg": "[ERROR] 'docker' service is missing.",
+        "recommendation": "[RECOMMENDATION] Restrict docker group access and avoid privileged containers if possible."
     },
     "ssh": {
-        "description": "Service d'accès distant sécurisé (SSH)",
+        "description": "Secure remote access service (SSH)",
         "criticality": "high",
-        "active_msg": "[✔] Le service 'ssh' est actif.",
-        "inactive_msg": "[✘] Le service 'ssh' n'est pas actif. Activez-le pour permettre les connexions distantes.",
-        "enabled_msg": "[✔] Le service 'ssh' est activé au démarrage.",
-        "disabled_msg": "[✘] Le service 'ssh' n'est pas activé au démarrage.",
-        "not_found_msg": "[❌] Le service 'ssh' est introuvable.",
-        "recommendation": "🛡️ Sécurisez SSH : désactivez root login, limitez les utilisateurs, utilisez des clés d'authentification."
+        "active_msg": "[OK] 'ssh' service is active.",
+        "inactive_msg": "[FAIL] 'ssh' service is not active. Enable it to allow remote access.",
+        "enabled_msg": "[OK] 'ssh' service is enabled at boot.",
+        "disabled_msg": "[FAIL] 'ssh' service is not enabled at boot.",
+        "not_found_msg": "[ERROR] 'ssh' service is missing.",
+        "recommendation": "[RECOMMENDATION] Secure SSH: disable root login, restrict users, use key authentication."
     },
     "x11": {
-        "description": "Serveur d'affichage graphique X11",
+        "description": "X11 graphical display server",
         "criticality": "medium",
-        "active_msg": "[✘] Le service 'x11' est actif.",
-        "inactive_msg": "[✔] Le service 'x11' n'est pas actif.",
-        "enabled_msg": "[✘] Le service 'x11' est activé au démarrage.",
-        "disabled_msg": "[✔] Le service 'x11' n'est pas activé au démarrage.",
-        "not_found_msg": "[❌] Le service 'x11' est introuvable.",
-        "recommendation": "📉 X11 ne devrait pas être activé sur un serveur. Supprimez-le si non utilisé."
+        "active_msg": "[FAIL] 'x11' service is active.",
+        "inactive_msg": "[OK] 'x11' service is not active.",
+        "enabled_msg": "[FAIL] 'x11' service is enabled at boot.",
+        "disabled_msg": "[OK] 'x11' service is not enabled at boot.",
+        "not_found_msg": "[ERROR] 'x11' service is missing.",
+        "recommendation": "[RECOMMENDATION] X11 should not be active on a server. Remove it if unused."
     }
 }
 
