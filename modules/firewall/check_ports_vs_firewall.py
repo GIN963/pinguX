@@ -1,15 +1,7 @@
 import subprocess
 import re
 import logging
-from modules.check_nft import scan_nftables
-
-# ----- Setup logging -----
-logging.basicConfig(
-    filename='pingux.log',
-    level=logging.INFO,
-    format='%(asctime)s - %(levelname)s - %(message)s',
-    datefmt='%H:%M:%S'
-)
+from modules.firewall.check_nft import scan_nftables
 
 logger = logging.getLogger(__name__)
 

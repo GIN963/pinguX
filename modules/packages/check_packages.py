@@ -2,14 +2,6 @@ import subprocess
 import logging
 from utils.dictionaries.banned_packages import BANNED_PACKAGES
 
-# ----- Setup logging -----
-logging.basicConfig(
-    filename='pingux.log',
-    level=logging.INFO,
-    format='%(asctime)s - %(levelname)s - %(message)s',
-    datefmt='%H:%M:%S'
-)
-
 logger = logging.getLogger(__name__)
 
 def scan_packages():

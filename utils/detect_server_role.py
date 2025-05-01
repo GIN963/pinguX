@@ -1,4 +1,4 @@
-from utiles.dictionaries.roles_config import ROLE_PROCESS_MAP
+from utils.dictionaries.server_roles_config import ROLE_PROCESS_MAP
 
 def detect_server_roles(processes):
     """

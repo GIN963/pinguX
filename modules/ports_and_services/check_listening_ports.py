@@ -6,13 +6,6 @@ from utils.dictionaries.server_roles_config import ROLE_PROCESS_MAP, DEFAULT_ACC
 from utils.detect_server_role import detect_server_roles
 from utils.get_process_list import get_process_list
 
-# ----- Setup logging -----
-logging.basicConfig(
-    filename='pingux.log',
-    level=logging.INFO,
-    format='%(asctime)s - %(levelname)s - %(message)s',
-    datefmt='%H:%M:%S'
-)
 logger = logging.getLogger(__name__)
 
 def scan_listening_ports():

@@ -5,14 +5,6 @@ import shutil
 from utils.whitelist_comparator import compare_firewall_rules
 from utils.dictionaries.firewall_whitelist import NFT_WHITELIST
 
-# ----- Setup logging -----
-logging.basicConfig(
-    filename='pingux.log',
-    level=logging.INFO,
-    format='%(asctime)s - %(levelname)s - %(message)s',
-    datefmt='%H:%M:%S'
-)
-
 logger = logging.getLogger(__name__)
 
 # ----- nftables -----
@@ -46,7 +38,7 @@ def scan_nftables():
         if not filter_found:
             report.append("[FAIL] 'inet filter' table not found")
             logging.warning("[FAIL] 'inet filter' table not found")
-            return report
+            return report, allowed_ports
 
         # Check the default policies for input/output/forward hooks
         for chain in lines:

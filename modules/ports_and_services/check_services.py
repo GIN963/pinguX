@@ -5,13 +5,6 @@ import logging
 from utils.dictionaries.services_config import SENSITIVE_SERVICES
 from utils.config_checker import check_config_service
 
-# ----- Setup logging -----
-logging.basicConfig(
-    filename='pingux.log',
-    level=logging.INFO,
-    format='%(asctime)s - %(levelname)s - %(message)s',
-    datefmt='%H:%M:%S'
-)
 logger = logging.getLogger(__name__)
 
 def scan_services():

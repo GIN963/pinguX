@@ -1,17 +1,11 @@
 import os
 import subprocess
 import re
+import shutil
 import logging
 from utils.ung_util import *
 from utils.dictionaries.perms_config import *
-
-# ----- Setup logging -----
-logging.basicConfig(
-    filename='pingux.log',
-    level=logging.INFO,
-    format='%(asctime)s - %(levelname)s - %(message)s',
-    datefmt='%H:%M:%S'
-)
+from utils.perms_util import *
 
 logger = logging.getLogger(__name__)
 
@@ -33,62 +27,72 @@ def scan_logs_n_perms():
 
     # Parse last login data using 'lastlog'
     logger.info("Parsing last login data using 'lastlog' command...")
-    try:
-        lastlog_com = subprocess.run(['lastlog'], capture_output=True, text=True, check=True)
-        lines = lastlog_com.stdout.strip().splitlines()[1:]
 
-        check_config_directive(
-            lines,
-            r'^\s*(\S+)\s+\S+\s+\S+\s+(.*\d{4})$',
-            2,
-            report,
-            check_func=check_last_login,
-            success_msg_func=lambda d: f"[OK] Last login was at {d} (OK)",
-            fail_msg_func=lambda d: f"[FAIL] Last login was at {d} → account might be inactive for too long",
-            missing_msg="[FAIL] No lastlog data found",
-            warning_func=warn_last_login,
-            warning_msg_func=lambda d: f"[WARNING] Last login was at {d} → user is becoming inactive"
-        )
-    except subprocess.CalledProcessError as e:
-        logger.error(f"Failed to run 'lastlog' command: {e}")
-        report.append(f"[FAIL] Failed to run 'lastlog' command: {e}")
+    if not shutil.which("lastlog"):
+        logger.error("'lastlog' command not found.")
+        report.append("[FAIL] 'lastlog' command not found.")
+    else:
+        try:
+            lastlog_com = subprocess.run(['lastlog'], capture_output=True, text=True, check=True)
+            lines = lastlog_com.stdout.strip().splitlines()[1:]
+
+            check_config_directive(
+                lines,
+                r'^\s*(\S+)\s+\S+\s+\S+\s+(.*\d{4})$',
+                2,
+                report,
+                check_func=check_last_login,
+                success_msg_func=lambda d: f"[OK] Last login was at {d} (OK)",
+                fail_msg_func=lambda d: f"[FAIL] Last login was at {d} → account might be inactive for too long",
+                missing_msg="[FAIL] No lastlog data found",
+                warning_func=warn_last_login,
+                warning_msg_func=lambda d: f"[WARNING] Last login was at {d} → user is becoming inactive"
+            )
+        except subprocess.CalledProcessError as e:
+            logger.error(f"Failed to run 'lastlog' command: {e}")
+            report.append(f"[FAIL] Failed to run 'lastlog' command: {e}")
 
     # Analyze failed login attempts using 'faillog'
     logger.info("Analyzing failed login attempts with 'faillog' command...")
-    try:
-        faillog_com = subprocess.run(['faillog'], capture_output=True, text=True, check=True)
-        lines = faillog_com.stdout.strip().splitlines()[1:]
 
-        for line in lines:
-            match = re.search(r'^\s*(\S+)\s+(\d+)\s+(.*)$', line)
-            if match:
-                user = match.group(1)
-                fails = match.group(2)
-                optional = match.group(3)
+    if not shutil.which("faillog"):
+        logger.error("'faillog' command not found.")
+        report.append("[FAIL] 'faillog' command not found.")
+    else:
+        try:
+            faillog_com = subprocess.run(['faillog'], capture_output=True, text=True, check=True)
+            lines = faillog_com.stdout.strip().splitlines()[1:]
 
-                if fails == "0":
-                    if optional.strip() == "":
-                        report.append(f"[OK] No recent failed login record found for user '{user}'")
-                        logger.info(f"[OK] No recent failed login record found for user '{user}'")
+            for line in lines:
+                match = re.search(r'^\s*(\S+)\s+(\d+)\s+(.*)$', line)
+                if match:
+                    user = match.group(1)
+                    fails = match.group(2)
+                    optional = match.group(3)
+
+                    if fails == "0":
+                        if optional.strip() == "":
+                            report.append(f"[OK] No recent failed login record found for user '{user}'")
+                            logger.info(f"[OK] No recent failed login record found for user '{user}'")
+                        else:
+                            report.append(f"[OK] User '{user}' has no failed login attempts (last failure was at {optional.strip()})")
+                            logger.info(f"[OK] User '{user}' has no failed login attempts (last failure was at {optional.strip()})")
+
+                    elif 1 <= int(fails) <= 5:
+                        report.append(f"[WARNING] User '{user}' has {fails} failed login attempt(s) → monitor the account")
+                        logger.warning(f"[WARNING] User '{user}' has {fails} failed login attempt(s) → monitor the account")
+
+                    elif int(fails) > 5:
+                        report.append(f"[WARNING] User '{user}' has {fails} failed login attempts → potential brute-force or suspicious activity")
+                        logger.error(f"[WARNING] User '{user}' has {fails} failed login attempts → potential brute-force or suspicious activity")
+
                     else:
-                        report.append(f"[OK] User '{user}' has no failed login attempts (last failure was at {optional.strip()})")
-                        logger.info(f"[OK] User '{user}' has no failed login attempts (last failure was at {optional.strip()})")
+                        report.append(f"[FAIL] Unable to determine failure count for user '{user}'")
+                        logger.error(f"[FAIL] Unable to determine failure count for user '{user}'")
 
-                elif 1 <= int(fails) <= 5:
-                    report.append(f"[WARNING] User '{user}' has {fails} failed login attempt(s) → monitor the account")
-                    logger.warning(f"[WARNING] User '{user}' has {fails} failed login attempt(s) → monitor the account")
-
-                elif int(fails) > 5:
-                    report.append(f"[WARNING] User '{user}' has {fails} failed login attempts → potential brute-force or suspicious activity")
-                    logger.error(f"[WARNING] User '{user}' has {fails} failed login attempts → potential brute-force or suspicious activity")
-
-                else:
-                    report.append(f"[FAIL] Unable to determine failure count for user '{user}'")
-                    logger.error(f"[FAIL] Unable to determine failure count for user '{user}'")
-
-    except subprocess.CalledProcessError as e:
-        logger.error(f"Failed to run 'faillog' command: {e}")
-        report.append(f"[FAIL] Failed to run 'faillog' command: {e}")
+        except subprocess.CalledProcessError as e:
+            logger.error(f"Failed to run 'faillog' command: {e}")
+            report.append(f"[FAIL] Failed to run 'faillog' command: {e}")
 
     # Check if Fail2Ban is active
     logger.info("Checking Fail2Ban service status...")

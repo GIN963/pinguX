@@ -2,16 +2,8 @@ import os
 import shlex
 import logging
 from modules.crontab.crontab_scripts_audit import audit_script
-from modules.crontab.detect_dangerous_commands import check_dangerous_command
-from modules.crontab.check_frequency import check_frequency
-
-# ----- Setup logging -----
-logging.basicConfig(
-    filename='pingux.log',
-    level=logging.INFO,
-    format='%(asctime)s - %(levelname)s - %(message)s',
-    datefmt='%H:%M:%S'
-)
+from modules.crontab.crontab_dangerous_commands import scan_dangerous_command
+from modules.crontab.crontab_frequency import scan_frequency
 
 logger = logging.getLogger(__name__)
 

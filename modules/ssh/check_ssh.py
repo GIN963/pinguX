@@ -1,4 +1,4 @@
-from utils.config_directive_checker import check_config_directive
+from utils.config_checker import check_config_directive
 from utils.dictionaries.ssh_directives_config import *
 from utils.ssh_util import analyze_auth_methods
 import argparse
@@ -7,13 +7,6 @@ import subprocess
 import re
 import logging
 
-# ----- Setup logging -----
-logging.basicConfig(
-    filename='pingux.log',
-    level=logging.INFO,
-    format='%(asctime)s - %(levelname)s - %(message)s',
-    datefmt='%H:%M:%S'
-)
 logger = logging.getLogger(__name__)
 
 # ----- SSH Scanner -----

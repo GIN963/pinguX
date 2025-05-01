@@ -5,14 +5,6 @@ import shutil
 from utils.whitelist_comparator import compare_firewall_rules
 from utils.dictionaries.firewall_whitelist import NFT_WHITELIST
 
-# ----- Setup logging -----
-logging.basicConfig(
-    filename='pingux.log',
-    level=logging.INFO,
-    format='%(asctime)s - %(levelname)s - %(message)s',
-    datefmt='%H:%M:%S'
-)
-
 logger = logging.getLogger(__name__)
 
 # ----- UFW -----

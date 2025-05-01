@@ -7,15 +7,7 @@ import logging
 from collections import Counter
 from utils.ung_util import *
 from utils.perms_util import check_file_perms
-from utils.dictionaries.usersgroups import *
-
-# ----- Setup logging -----
-logging.basicConfig(
-    filename='pingux.log',
-    level=logging.INFO,
-    format='%(asctime)s - %(levelname)s - %(message)s',
-    datefmt='%H:%M:%S'
-)
+from utils.dictionaries.usersgroups_shells import *
 
 logger = logging.getLogger(__name__)
 
