@@ -1,2 +1,2 @@
-# pinguX
-PinguX — your chill little auditor with sharp security claws 🐧🛡️
+# pinGuX
+pinGuX — your chill little auditor with sharp security claws 🐧🛡️
