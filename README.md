@@ -32,15 +32,15 @@ Whether you're securing a production server or learning Linux hardening, pinGuX 
 ## 🛠️ Installation
 
 ```bash
-git clone https://github.com/yourname/pingux.git
+git clone https://github.com/GIN963/pingux.git
 cd pingux
-chmod +x pinGuX.py
+chmod +x pinguX.py
 ```
 
 Make sure you're running as **root**:
 
 ```bash
-sudo ./pinGuX.py
+sudo ./pinguX.py
 ```
 
 ---
@@ -57,7 +57,7 @@ sudo ./pinGuX.py
 **Example**:
 
 ```bash
-sudo ./pinGuX.py --output txt --verbose
+sudo ./pinguX.py --output txt --verbose
 ```
 
 ---
@@ -101,7 +101,7 @@ sudo ./pinGuX.py --output txt --verbose
 ## 🤝 Contributing
 
 Contributions, suggestions, or bug reports are welcome!  
-Just fork the repo, submit a PR, or open an issue 😊
+Just fork the repo, submit a PR, or open an issue :)
 
 ---
 
