@@ -1,0 +1,75 @@
+import subprocess
+import logging
+from utils.dictionaries.sysctl_config import SYSCTL_HARDENING_RULES
+
+logger = logging.getLogger(__name__)
+
+def scan_sysctl():
+    sysctl_output = {}
+    report = []
+
+    try:
+        logging.info("=== Starting sysctl Audit ===")
+
+        # Run sysctl -a to get active kernel values
+        sysctl_com = subprocess.run(['sysctl', '-a'], capture_output=True, text=True, check=True)
+        lines = sysctl_com.stdout.strip().splitlines()
+        logging.info("[OK] sysctl -a output retrieved successfully")
+
+        # Parse sysctl -a output into a dictionary
+        for line in lines:
+            if "=" in line:
+                key, value = line.split("=", 1)
+                sysctl_output[key.strip()] = value.strip()
+
+    except subprocess.CalledProcessError as e:
+        report.append(f"[FAIL] Error retrieving sysctl values: {e}")
+        logging.error(f"[FAIL] Error retrieving sysctl values: {e}")
+        return report
+
+    try:
+        # Load sysctl.conf once for persistence checks
+        with open('/etc/sysctl.conf') as f:
+            sysctl_conf_lines = f.readlines()
+        logging.info("[OK] /etc/sysctl.conf loaded successfully")
+
+    except FileNotFoundError:
+        report.append("[FAIL] /etc/sysctl.conf not found")
+        logging.error("[FAIL] /etc/sysctl.conf not found")
+        sysctl_conf_lines = []
+
+    # Audit each expected sysctl directive
+    for rule, expected_value in SYSCTL_HARDENING_RULES.items():
+        if rule in sysctl_output:
+            actual_value = sysctl_output[rule]
+            if actual_value == expected_value:
+                report.append(f"[OK] {rule} = {actual_value} (kernel) — OK")
+                logging.info(f"[OK] {rule} = {actual_value} (kernel) — OK")
+            else:
+                report.append(f"[WARNING] {rule} = {actual_value} (kernel), expected {expected_value}")
+                logging.warning(f"[WARNING] {rule} = {actual_value} (kernel), expected {expected_value}")
+        else:
+            report.append(f"[WARNING] {rule} not found in sysctl -a — checking sysctl.conf...")
+            logging.warning(f"[WARNING] {rule} not found in sysctl -a — checking sysctl.conf...")
+
+        # Always check persistence in sysctl.conf
+        found_in_file = False
+        for line in sysctl_conf_lines:
+            if rule in line:
+                found_in_file = True
+                if line.strip().startswith("#"):
+                    report.append(f"[WARNING] {rule} is commented in sysctl.conf — should be uncommented")
+                    logging.warning(f"[WARNING] {rule} is commented in sysctl.conf — should be uncommented")
+                elif f"{rule}={expected_value}" not in line.replace(" ", ""):
+                    report.append(f"[FAIL] {rule} found in sysctl.conf but has wrong value")
+                    logging.warning(f"[FAIL] {rule} found in sysctl.conf but has wrong value")
+                else:
+                    report.append(f"[OK] {rule} is correctly configured in sysctl.conf")
+                    logging.info(f"[OK] {rule} is correctly configured in sysctl.conf")
+        if not found_in_file:
+            report.append(f"[WARNING] {rule} is missing from sysctl.conf — should be added")
+            logging.warning(f"[WARNING] {rule} is missing from sysctl.conf — should be added")
+
+    report.append("[DETAILS] Detailed logs saved to pingux.log")
+    logging.info("=== sysctl Audit Completed ===")
+    return report
