@@ -16,14 +16,14 @@ Whether you're securing a production server or learning Linux hardening, pinGuX 
 
 - ✅ Checks SSH configuration and weak authentication directives
 - 🔐 Analyzes password aging and `/etc/shadow` policies
-- 🧍 Detects UID/GID duplicates and misconfigured users
+- 🡭 Detects UID/GID duplicates and misconfigured users
 - 📁 Verifies critical file and directory permissions
-- 📜 Scans cron jobs for dangerous commands or scripts
-- 🧱 Audits firewall rules (UFW or nftables)
+- 📋 Scans cron jobs for dangerous commands or scripts
+- 🧫 Audits firewall rules (UFW or nftables)
 - 🌐 Compares listening ports to firewall exposure
-- 📦 Detects insecure or banned packages
+- 📆 Detects insecure or banned packages
 - 🧠 Auto-detects server roles based on active processes
-- 🧾 Logs everything to `pingux.log` for full traceability
+- 🗒 Logs everything to `pingux.log` for full traceability
 
 ---
 
@@ -33,4 +33,100 @@ Whether you're securing a production server or learning Linux hardening, pinGuX 
 git clone https://github.com/yourname/pingux.git
 cd pingux
 chmod +x pinGuX.py
+```
+
+Make sure you're running as **root**:
+
+```bash
+sudo ./pinGuX.py
+```
+
+---
+
+## ⚙️ Options
+
+| Option                   | Description                                     |
+|--------------------------|-------------------------------------------------|
+| `--output txt`           | Save audit report in `.txt` format             |
+| `--output json`          | Save audit report in `.json` format            |
+| `-v`, `--verbose`        | Print audit results to the console             |
+| `-q`, `--quiet`          | Silent mode — no console output                |
+
+Example:
+
+```bash
+sudo ./pinGuX.py --output txt --verbose
+```
+
+---
+
+## 📁 Output
+
+- 📝 Audit report: `pingux_report_<timestamp>.txt` or `.json`
+- 📚 Full audit logs: `pingux.log`
+
+These are **ignored by Git** via `.gitignore`.
+
+---
+
+## 🔍 Module Breakdown
+
+| Module                 | Description                                      |
+|------------------------|--------------------------------------------------|
+| `check_ssh`            | Audit of SSH configuration and auth mechanisms  |
+| `check_users_groups`   | Full user/group integrity and password policy    |
+| `check_logs_n_perms`   | Lastlog, faillog, permission checks              |
+| `check_crontab`        | Scheduled tasks, script audits, frequency checks |
+| `check_packages`       | Detection of dangerous packages via dpkg         |
+| `check_sysctl`         | Hardening of sysctl kernel parameters            |
+| `check_nft` / `check_ufw` | Firewall configuration (auto-detected)       |
+| `check_ports`          | Comparison between open ports and firewall rules |
+| `check_services`       | Audit of risky or legacy services                |
+
+---
+
+## 🧪 Example Output (TXT)
+
+```
+[OK] SSH service is active
+[WARNING] PermitRootLogin is enabled — should be disabled
+[FAIL] /etc/shadow is world-readable!
+[OK] Fail2Ban is active and running
+[WARNING] Port 8080/tcp is open but not allowed by firewall — potential exposure
+```
+
+---
+
+## 🧠 Roadmap
+
+- [ ] Add HTML output support
+- [ ] Add `--interactive` CLI interface
+- [ ] Add plugin system (custom checks)
+- [ ] Add remote mode (via SSH)
+- [ ] Package as `.deb`
+
+---
+
+## 🤝 Contributing
+
+Contributions, suggestions, or bug reports are welcome!  
+Just fork the repo, submit a PR, or open an issue 🙌
+
+---
+
+## ⚠️ Disclaimer
+
+This tool is for **educational and defensive** purposes only.  
+Use responsibly and always with permission on target systems.
+
+---
+
+## 🧑‍💻 Author
+
+**n4n0n3t** — _Cybersecurity enthusiast, DevSecOps on the way_  
+Feel free to reach out or check my other projects!
+
+---
+
+
 
