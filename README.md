@@ -97,16 +97,6 @@ These are **ignored by Git** via `.gitignore`.
 
 ---
 
-## 🧠 Roadmap
-
-- [ ] Add HTML output support
-- [ ] Add `--interactive` CLI interface
-- [ ] Add plugin system (custom checks)
-- [ ] Add remote mode (via SSH)
-- [ ] Package as `.deb`
-
----
-
 ## 🤝 Contributing
 
 Contributions, suggestions, or bug reports are welcome!  
