@@ -1,0 +1,6 @@
+pingux.log
+pingux_report_*.txt
+pingux_report_*.json
+
+__pycache__/
+*.pyc

@@ -1,120 +1,111 @@
-# pinguX
-PinguX — your chill little auditor with sharp security claws 🐧🛡️
+# 🐧 pinguX
 
-# 🐧 PinguX Roadmap (Mars → Août 2025)
+**pinguX** — your chill little auditor with sharp security claws 🐧🛡️
 
-Projet de scanner de sécurité Linux local & distant, avec extension Cloud et CI/CD. Roadmap alignée avec ma montée en compétences DevSecOps / CloudSec.
-
----
-
-## 🚀 Mars 2025 — PinguX Core: Audit local Linux
-
-### ✅ Objectif : Créer les premiers modules de sécurité pour auditer une machine Linux locale
-
-**Modules à développer :**
-- [x] `ufw`: status, default policy, whitelist
-- [x] `nftables`: table filter, hooks, drop policy
-- [x] `ssh`: Port, PermitRootLogin, MaxAuthTries
-- [ ] `users`: comptes root, sudoers, comptes sans mdp
-- [ ] `services`: services critiques, ports ouverts
-- [ ] `fail2ban`: actif ? patterns ? brute-force
-- [ ] `journaux`: auth.log, connexions suspectes
-
-**Objectifs techniques :**
-- Parsing (configs, fichiers)
-- `argparse`, `subprocess`, `regex`
-- Rapport `.txt` ou `.json`
-- Premiers fichiers modulaires
-
-**✅ Fin mars :** audit complet local + rapport lisible
+> A modular, extensible, and beginner-friendly Linux security auditing tool.
 
 ---
 
-## 🔒 Avril 2025 — Hardening & structure
+## 🚀 Overview
 
-### ✅ Objectif : Finaliser la sécurité locale et créer un framework robuste
+**pinguX** is a security audit script for Linux systems. It performs deep checks on system configuration, firewall rules, listening ports, users and permissions, and more — all in a clean, modular structure.
 
-**Fonctionnalités :**
-- Logging (verbose / quiet)
-- Score global ou criticité par module
-- Recommandations automatiques
-- Loader dynamique des modules
-
-**Technique :**
-- CLI propre avec `--module` / `--all`
-- Organisation en `modules/*.py`
-- Gestion des erreurs si module absent
-
-**✅ Fin avril :** outil modulaire, propre, extensible
+Whether you're securing a production server or learning Linux hardening, pinGuX helps you spot **misconfigurations** before attackers do.
 
 ---
 
-## 🌐 Mai 2025 — Audit distant (via SSH)
+## 📋 Features
 
-### ✅ Objectif : Scanner une IP distante via SSH
-
-**Fonctionnalités :**
-- Connexion `paramiko`
-- Envoi commandes à distance (UFW, SSH, etc.)
-- `--remote` avec IP + user + clé SSH
-
-**Technique :**
-- Sécurité connexion SSH (timeouts, erreurs)
-- Wrapper d'audit distant avec rapport
-
-**✅ Fin mai :** PinguX scanne n'importe quel Linux distant
+- Checks SSH configuration and weak authentication directives  
+- Analyzes password aging and `/etc/shadow` policies  
+- Detects UID/GID duplicates and misconfigured users  
+- Verifies critical file and directory permissions  
+- Scans cron jobs for dangerous commands or scripts  
+- Audits firewall rules (`UFW` or `nftables`)  
+- Compares listening ports to firewall exposure  
+- Detects insecure or banned packages  
+- Auto-detects server roles based on active processes  
+- Logs everything to `pingux.log` for full traceability  
 
 ---
 
-## ☁️ Juin 2025 — Premiers modules Cloud AWS
+## 🛠️ Installation
 
-### ✅ Objectif : Auditer des EC2 AWS basiques (localement ou via boto3)
+```bash
+git clone https://github.com/yourname/pingux.git
+cd pingux
+chmod +x pinGuX.py
+```
 
-**Modules à ajouter :**
-- Analyse Security Group (ports ouverts)
-- IAM Role attaché à l'instance
-- Volumes chiffrés ?
+Make sure you're running as **root**:
 
-**Technique :**
-- Apprentissage `boto3`
-- Export des rapports JSON depuis le cloud
-
-**✅ Fin juin :** extension cloud-ready
-
----
-
-## 🛠️ Juillet 2025 — Packaging & transformation CLI tool
-
-### ✅ Objectif : Transformer PinguX en outil installable
-
-**Fonctionnalités :**
-- `setup.py` ou `pyproject.toml`
-- `pinguX` exécutable globalement via `pip`
-- Fichiers `__init__.py` propres
-- README + usage complet
-
-**✅ Fin juillet :** outil Python portable et propre
+```bash
+sudo ./pinGuX.py
+```
 
 ---
 
-## 🔐 Août 2025 — CI/CD + DevSecOps
+## ⚙️ Options
 
-### ✅ Objectif : Intégrer PinguX dans une pipeline CI/CD
+| Option              | Description                                 |
+|---------------------|---------------------------------------------|
+| `--output txt`      | Save audit report in `.txt` format          |
+| `--output json`     | Save audit report in `.json` format         |
+| `-v`, `--verbose`   | Print audit results to the console          |
+| `-q`, `--quiet`     | Silent mode — no console output             |
 
-**Fonctionnalités :**
-- GitHub Actions: exécution auto de pinguX
-- Upload du rapport JSON
-- Lancement post-déploiement EC2
-- Intégration d'autres outils: `checkov`, `bandit`, etc.
+**Example**:
 
-**✅ Fin août :** pipeline CI/CD avec vérification sécurité + rapport intégré
+```bash
+sudo ./pinGuX.py --output txt --verbose
+```
+
+---
+
+## 📁 Output
+
+- Audit report: `pingux_report_<timestamp>.txt` or `.json`
+- Full audit logs: `pingux.log`  
+> _(These files are ignored by Git via `.gitignore`)_
 
 ---
 
-## 🌟 Vision long terme (optionnelle)
-- Intégration API (FastAPI ?)
-- Export Grafana / Prometheus
-- Mode "daemon" d'audit en continu
-- Interface web minimaliste
+## 🔍 Module Breakdown
+
+| Module              | Description                                          |
+|---------------------|------------------------------------------------------|
+| `check_ssh`         | Audit of SSH configuration and auth mechanisms      |
+| `check_users_groups`| Full user/group integrity and password policy        |
+| `check_logs_n_perms`| Lastlog, faillog, permission checks                  |
+| `check_crontab`     | Scheduled tasks, script audits, frequency checks     |
+| `check_packages`    | Detection of dangerous packages via dpkg             |
+| `check_sysctl`      | Hardening of sysctl kernel parameters                |
+| `check_nft / check_ufw` | Firewall configuration (auto-detected)          |
+| `check_ports`       | Comparison between open ports and firewall rules     |
+| `check_services`    | Audit of risky or legacy services                    |
 
 ---
+
+## 🧪 Example Output (TXT)
+
+```
+[OK] SSH service is active
+[WARNING] PermitRootLogin is enabled — should be disabled
+[FAIL] /etc/shadow is world-readable!
+[OK] Fail2Ban is active and running
+[WARNING] Port 8080/tcp is open but not allowed by firewall — potential exposure
+```
+
+---
+
+## 🤝 Contributing
+
+Contributions, suggestions, or bug reports are welcome!  
+Just fork the repo, submit a PR, or open an issue 😊
+
+---
+
+## ⚠️ Disclaimer
+
+This tool is for educational and **defensive** purposes only.  
+Use responsibly and **always with permission** on target systems.
