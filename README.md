@@ -8,7 +8,7 @@
 
 **pinGuX** is a security audit script for Linux systems. It performs deep checks on system configuration, firewall rules, listening ports, users and permissions, and more — all in a clean, modular structure.
 
-Whether you're securing a production server or learning Linux hardening, PinguX helps you spot misconfigurations before attackers do.
+Whether you're securing a production server or learning Linux hardening, pinGuX helps you spot misconfigurations before attackers do.
 
 ---
 
