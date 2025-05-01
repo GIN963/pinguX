@@ -14,16 +14,16 @@ Whether you're securing a production server or learning Linux hardening, pinGuX 
 
 ## 📋 Features
 
-- ✅ Checks SSH configuration and weak authentication directives
-- 🔐 Analyzes password aging and `/etc/shadow` policies
-- 🡭 Detects UID/GID duplicates and misconfigured users
-- 📁 Verifies critical file and directory permissions
-- 📋 Scans cron jobs for dangerous commands or scripts
-- 🧫 Audits firewall rules (UFW or nftables)
-- 🌐 Compares listening ports to firewall exposure
-- 📆 Detects insecure or banned packages
-- 🧠 Auto-detects server roles based on active processes
-- 🗒 Logs everything to `pingux.log` for full traceability
+-  Checks SSH configuration and weak authentication directives
+-  Analyzes password aging and `/etc/shadow` policies
+-  Detects UID/GID duplicates and misconfigured users
+-  Verifies critical file and directory permissions
+-  Scans cron jobs for dangerous commands or scripts
+-  Audits firewall rules (UFW or nftables)
+-  Compares listening ports to firewall exposure
+-  Detects insecure or banned packages
+-  Auto-detects server roles based on active processes
+-  Logs everything to `pingux.log` for full traceability
 
 ---
 
@@ -62,8 +62,8 @@ sudo ./pinGuX.py --output txt --verbose
 
 ## 📁 Output
 
-- 📝 Audit report: `pingux_report_<timestamp>.txt` or `.json`
-- 📚 Full audit logs: `pingux.log`
+-  Audit report: `pingux_report_<timestamp>.txt` or `.json`
+-  Full audit logs: `pingux.log`
 
 These are **ignored by Git** via `.gitignore`.
 
@@ -110,7 +110,7 @@ These are **ignored by Git** via `.gitignore`.
 ## 🤝 Contributing
 
 Contributions, suggestions, or bug reports are welcome!  
-Just fork the repo, submit a PR, or open an issue 🙌
+Just fork the repo, submit a PR, or open an issue :)
 
 ---
 
@@ -121,12 +121,6 @@ Use responsibly and always with permission on target systems.
 
 ---
 
-## 🧑‍💻 Author
-
-**n4n0n3t** — _Cybersecurity enthusiast, DevSecOps on the way_  
-Feel free to reach out or check my other projects!
-
----
 
 
 
