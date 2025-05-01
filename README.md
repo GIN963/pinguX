@@ -32,8 +32,8 @@ Whether you're securing a production server or learning Linux hardening, pinGuX 
 ## 🛠️ Installation
 
 ```bash
-git clone https://github.com/GIN963/pingux.git
-cd pingux
+git clone https://github.com/GIN963/pinguX.git
+cd pinguX
 chmod +x pinguX.py
 ```
 
